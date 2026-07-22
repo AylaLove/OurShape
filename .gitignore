@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.*
+
+# Next.js
+.next/
+out/
+
+# Local configuration and secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Tests and tooling
+coverage/
+*.tsbuildinfo
+
+# Operating systems and editors
+.DS_Store
+.idea/
+.vscode/
+
+# Supabase local state
+supabase/.branches/
+supabase/.temp/
+

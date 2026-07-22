@@ -1,0 +1,20 @@
+{
+  "name": "family-participation-game",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace @family-game/web run dev",
+    "build": "npm --workspace @family-game/web run build",
+    "typecheck": "npm --workspace @family-game/web run typecheck",
+    "health": "node scripts/project-health.mjs",
+    "check": "npm run typecheck && npm run health"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
+

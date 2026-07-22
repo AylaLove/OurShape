@@ -1,0 +1,60 @@
+import type { DailyQuest } from "@family-game/domain";
+
+export const DEMO_QUESTS: DailyQuest[] = [
+  {
+    id: "demo-dishes",
+    householdId: "demo-household",
+    title: "Dishes",
+    kind: "open",
+    state: "needed",
+    effort: "light",
+    appreciationValue: 1,
+    icon: "dishes",
+    participantIds: [],
+  },
+  {
+    id: "demo-laundry",
+    householdId: "demo-household",
+    title: "Pack away laundry",
+    kind: "duo",
+    state: "active",
+    effort: "medium",
+    appreciationValue: 2,
+    icon: "laundry",
+    participantIds: ["demo-ayla", "demo-child"],
+  },
+  {
+    id: "demo-kitchen",
+    householdId: "demo-household",
+    title: "Tidy kitchen",
+    kind: "family",
+    state: "needed",
+    effort: "medium",
+    appreciationValue: 2,
+    icon: "home",
+    participantIds: [],
+  },
+  {
+    id: "demo-reading",
+    householdId: "demo-household",
+    title: "Reading",
+    kind: "personal",
+    state: "pending_endorsement",
+    effort: "light",
+    appreciationValue: 1,
+    icon: "book",
+    participantIds: ["demo-child"],
+  },
+  {
+    id: "demo-plants",
+    householdId: "demo-household",
+    title: "Water plants",
+    kind: "care",
+    state: "needed",
+    effort: "light",
+    appreciationValue: 1,
+    icon: "plant",
+    participantIds: [],
+  }
+];
+
