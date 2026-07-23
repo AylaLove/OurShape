@@ -4,6 +4,9 @@ import type { DailyQuest, HouseholdMember } from "@family-game/domain";
 import { BookOpen, Flower2, Home, Shirt, Sparkles, Trees, Utensils, Volume2, X } from "lucide-react";
 import type { CSSProperties } from "react";
 import { HoldToFinishButton } from "./HoldToFinishButton";
+import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
+import { dinosaurStateForQuest } from "@/features/companion/companion-state";
+import { useState } from "react";
 
 const ICONS = { dishes: Utensils, laundry: Shirt, book: BookOpen, plant: Flower2, home: Home, wood: Trees, sparkle: Sparkles };
 
@@ -23,13 +26,14 @@ export function QuestDetailSheet({
   onClose: () => void;
   onJoin: () => void;
   onFinish: () => void;
-  onThank: () => void;
+  onThank: (note: string | null) => void;
   onNeedsMore: () => void;
 }) {
   const Icon = ICONS[quest.icon];
   const participants = members.filter((member) => quest.participantIds.includes(member.id));
   const activeJoined = quest.participantIds.includes(activeMember.id);
   const canThank = quest.state === "pending_endorsement" && !activeJoined;
+  const [thanksNote, setThanksNote] = useState<string | null>(null);
 
   function speak() {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -41,7 +45,10 @@ export function QuestDetailSheet({
     <div className="sheet-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section className="quest-sheet" role="dialog" aria-modal="true" aria-labelledby="quest-sheet-title">
         <header className="quest-sheet__header">
-          <div className="quest-sheet__icon"><Icon size={30} strokeWidth={1.7} /></div>
+          <div className="quest-sheet__visual">
+            <div className="quest-sheet__icon"><Icon size={27} strokeWidth={1.7} /></div>
+            <HomeDinosaur state={dinosaurStateForQuest(quest)} size="medium" />
+          </div>
           <button className="round-button round-button--plain" type="button" onClick={onClose} aria-label="Close quest"><X size={20} /></button>
         </header>
         <p className="eyebrow">{quest.kind.replace("_", " ")} quest</p>
@@ -72,7 +79,14 @@ export function QuestDetailSheet({
           ) : null}
           {canThank ? (
             <>
-              <button className="primary-button primary-button--thanks" type="button" onClick={onThank}>I saw it. Thank you!</button>
+              <div className="thanks-phrases" aria-label="Choose a thank-you message">
+                {["That helped us!", "I noticed your effort", "Great teamwork"].map((phrase) => (
+                  <button className={thanksNote === phrase ? "thanks-phrase thanks-phrase--selected" : "thanks-phrase"} type="button" key={phrase} onClick={() => setThanksNote(phrase)}>
+                    {phrase}
+                  </button>
+                ))}
+              </div>
+              <button className="primary-button primary-button--thanks" type="button" onClick={() => onThank(thanksNote)}>Send thanks</button>
               <button className="text-button" type="button" onClick={onNeedsMore}>Needs one small finishing touch</button>
             </>
           ) : null}

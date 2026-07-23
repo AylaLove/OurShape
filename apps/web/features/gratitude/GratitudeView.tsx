@@ -1,15 +1,18 @@
 import type { DailyQuest, GameState, HouseholdMember } from "@family-game/domain";
 import { Hand, Heart, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
+import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 
 export function GratitudeView({
   state,
   activeMember,
+  homeEnergy,
   onSelectQuest,
   onHighFive,
 }: {
   state: GameState;
   activeMember: HouseholdMember;
+  homeEnergy: number;
   onSelectQuest: (quest: DailyQuest) => void;
   onHighFive: (memberId: string) => void;
 }) {
@@ -23,7 +26,14 @@ export function GratitudeView({
         <div><p className="eyebrow">GRATITUDE</p><h1 id="thanks-title">See what was done</h1></div>
       </header>
 
-      <div className="gratitude-callout"><Sparkles size={22} /><p>Thanks closes the loop. It says, “Your effort mattered here.”</p></div>
+      <div className="gratitude-hero">
+        <HomeDinosaur state={waiting.length ? "carrying-energy" : "gratitude"} size="medium" />
+        <div>
+          <p className="eyebrow">HOME ENERGY · {homeEnergy}</p>
+          <h2>{waiting.length ? "Some effort is waiting to be seen" : "The gratitude loop is clear"}</h2>
+          <p>Thanks closes the loop. It says, “Your effort mattered here.”</p>
+        </div>
+      </div>
 
       <div className="subsection-heading"><h2>Waiting for thanks</h2><span>{waiting.length}</span></div>
       {waiting.length ? (

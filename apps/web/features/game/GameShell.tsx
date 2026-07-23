@@ -22,6 +22,11 @@ import { QuestDetailSheet } from "./QuestDetailSheet";
 import { TodayView } from "./TodayView";
 import { isSupabaseConfigured } from "@/lib/supabase-browser";
 import { QuickAddSheet, type QuickQuest } from "./QuickAddSheet";
+import {
+  deriveHomeDinosaurState,
+  homeEnergy,
+  type HomeDinosaurState,
+} from "@/features/companion/companion-state";
 
 function now() {
   return new Date().toISOString();
@@ -34,14 +39,21 @@ export function GameShell() {
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [companionMoment, setCompanionMoment] = useState<HomeDinosaurState | null>(null);
   const activeMember = state.household.members.find((member) => member.id === activeMemberId) ?? state.household.members[0];
   const selectedQuest = useMemo(() => state.quests.find((quest) => quest.id === selectedQuestId) ?? null, [selectedQuestId, state.quests]);
   const waitingCount = state.quests.filter((quest) => quest.state === "pending_endorsement" && !quest.participantIds.includes(activeMember.id)).length;
   const databaseReady = isSupabaseConfigured();
+  const dinosaurState = companionMoment ?? deriveHomeDinosaurState(state, activeMember.id);
+  const energy = homeEnergy(state);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [section, activeMemberId]);
 
   useEffect(() => {
     if (!toast) return;
@@ -49,8 +61,15 @@ export function GameShell() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  function apply(result: DomainResult, close = false) {
+  useEffect(() => {
+    if (!companionMoment) return;
+    const timer = window.setTimeout(() => setCompanionMoment(null), 2400);
+    return () => window.clearTimeout(timer);
+  }, [companionMoment]);
+
+  function apply(result: DomainResult, close = false, moment: HomeDinosaurState | null = null) {
     if (result.ok) setState(result.state);
+    if (result.ok && moment) setCompanionMoment(moment);
     setToast(result.message);
     if (close && result.ok) setSelectedQuestId(null);
   }
@@ -63,7 +82,7 @@ export function GameShell() {
     <main className={activeMember.role === "child" ? "app-shell app-shell--child" : "app-shell"}>
       <header className="topbar">
         <div>
-          <p className="eyebrow">WEDNESDAY · 22 JULY</p>
+          <p className="eyebrow">{new Intl.DateTimeFormat("en", { weekday: "long", day: "numeric", month: "long" }).format(new Date()).toUpperCase()}</p>
           <h1>{state.household.name}</h1>
         </div>
         <div className="topbar__actions">
@@ -79,8 +98,8 @@ export function GameShell() {
 
       <div className="demo-banner" role="status"><ShieldCheck size={15} /><span>Private playable demo</span><Cloud size={15} /><span>{databaseReady ? "Development database connected" : "Resettable demo data: not yet shared across phones"}</span></div>
 
-      {section === "today" ? <TodayView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} /> : null}
-      {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onHighFive={(memberId) => apply(sendHighFive(state, activeMember.id, memberId, now()))} /> : null}
+      {section === "today" ? <TodayView state={state} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={energy} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} /> : null}
+      {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} onHighFive={(memberId) => apply(sendHighFive(state, activeMember.id, memberId, now()), false, "celebrating")} /> : null}
       {section === "rewards" ? <RewardsView state={state} activeMember={activeMember} onRedeem={(rewardId) => apply(redeemReward(state, rewardId, activeMember.id, now()))} /> : null}
       {section === "family" ? <FamilyView state={state} activeMember={activeMember} /> : null}
 
@@ -92,9 +111,9 @@ export function GameShell() {
           members={state.household.members}
           activeMember={activeMember}
           onClose={() => setSelectedQuestId(null)}
-          onJoin={() => apply(joinQuest(state, selectedQuest.id, activeMember.id, now()))}
-          onFinish={() => apply(markQuestDone(state, selectedQuest.id, activeMember.id, now()), true)}
-          onThank={() => apply(endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now()), true)}
+          onJoin={() => apply(joinQuest(state, selectedQuest.id, activeMember.id, now()), false, "encouraging")}
+          onFinish={() => apply(markQuestDone(state, selectedQuest.id, activeMember.id, now()), true, "carrying-energy")}
+          onThank={(note) => apply(endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note), true, "sharing-energy")}
           onNeedsMore={() => apply(endorseQuest(state, selectedQuest.id, activeMember.id, "needs_a_little_more", now()), true)}
         />
       ) : null}

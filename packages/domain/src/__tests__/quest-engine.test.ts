@@ -77,6 +77,23 @@ describe("quest participation and gratitude", () => {
     expect(duplicate.ok).toBe(false);
     expect(duplicate.state.pointLedger).toHaveLength(1);
   });
+
+  it("keeps a short gratitude message with the verified endorsement", () => {
+    let state = fixture();
+    state = joinQuest(state, "quest-one", "adult-a", "2026-07-22T08:00:00Z").state;
+    state = markQuestDone(state, "quest-one", "adult-a", "2026-07-22T08:10:00Z").state;
+    const result = endorseQuest(
+      state,
+      "quest-one",
+      "adult-b",
+      "thanked",
+      "2026-07-22T08:11:00Z",
+      "That helped us!",
+    );
+
+    expect(result.state.endorsements[0].note).toBe("That helped us!");
+    expect(result.state.history[0].message).toContain("That helped us!");
+  });
 });
 
 describe("household geometry", () => {

@@ -23,7 +23,11 @@ The child profile uses simpler language, spoken quest instructions, large contro
 - PWA manifest and service worker shell.
 - Reviewable import sheet based on the supplied Flatastic screenshots.
 - Architecture health checks that reject giant source files, secret leakage, and accidental browser-storage truth.
-- An approved eight-pose transparent Home Dinosaur asset library, ready for the child-delight interface pass.
+- An approved eight-pose transparent Home Dinosaur asset library.
+- A live companion-state layer derived from real quest and gratitude events.
+- Non-spendable Home Energy derived from uniquely endorsed quests.
+- A four-stage daily board: Needs us, Doing, Waiting for thanks, and Celebrated.
+- Optional gratitude phrases saved with the verified endorsement.
 
 ## What still needs external setup
 
@@ -41,4 +45,4 @@ These are not honest to claim without a real Supabase project and private previe
 
 ## Recommended next checkpoint
 
-Complete the bounded child-delight interface pass described in `docs/CHILD_DELIGHT_REDESIGN_BRIEF.md`, using the approved Home Dinosaur assets without changing the domain rules. Then connect one development Supabase project, implement the real repository adapter behind the existing `GameRepository` boundary, and prove the same join-to-thanks loop on two adult accounts and one parent-managed child profile.
+Connect one development Supabase project, implement the real repository adapter behind the existing `GameRepository` boundary, and prove the same join-to-thanks loop on two adult accounts and one parent-managed child profile. After that proof, conduct the first short household playtest before adding more game systems.

@@ -111,6 +111,7 @@ export function endorseQuest(
   endorserId: string,
   response: QuestEndorsement["response"],
   now: string,
+  note: string | null = null,
 ): DomainResult {
   const quest = state.quests.find((candidate) => candidate.id === questId);
   const endorser = state.household.members.find((candidate) => candidate.id === endorserId);
@@ -131,7 +132,7 @@ export function endorseQuest(
     completionId: completion.id,
     endorserId,
     response,
-    note: null,
+    note: note?.trim().slice(0, 120) || null,
     createdAt: now,
   };
 
@@ -183,7 +184,9 @@ export function endorseQuest(
     type: "thanked",
     actorId: endorserId,
     questId,
-    message: `${endorser.displayName} sent thanks for ${quest.title}.`,
+    message: note?.trim()
+      ? `${endorser.displayName} thanked ${quest.title}: “${note.trim().slice(0, 120)}”`
+      : `${endorser.displayName} sent thanks for ${quest.title}.`,
     createdAt: now,
   });
   return { state: next, ok: true, message: "Thanks sent. Everyone who helped earned the full reward." };

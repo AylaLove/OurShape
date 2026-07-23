@@ -34,7 +34,6 @@
   line-height: 1.5;
 }
 
-.gratitude-callout,
 .child-balance {
   display: flex;
   align-items: flex-start;
@@ -47,6 +46,29 @@
   color: #5d4b1a;
   font-size: 13px;
   line-height: 1.45;
+}
+
+.gratitude-hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  margin: 0 -18px 24px;
+  padding: 8px 18px 13px;
+  border-top: 1px solid #ebdca8;
+  border-bottom: 1px solid #ebdca8;
+  background: #fff6d3;
+}
+
+.gratitude-hero h2 {
+  margin: 4px 0 6px;
+  font-size: 18px;
+}
+
+.gratitude-hero p:last-child {
+  color: #66531d;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .subsection-heading {
@@ -339,5 +361,14 @@
 @media (min-width: 620px) {
   .reward-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .gratitude-hero {
+    margin-right: -14px;
+    margin-left: -14px;
+    padding-right: 14px;
+    padding-left: 8px;
   }
 }

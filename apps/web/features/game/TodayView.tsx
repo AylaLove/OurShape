@@ -2,19 +2,34 @@ import { contributionBalance, type DailyQuest, type GameState, type HouseholdMem
 import { HouseholdShape } from "@/features/geometry/HouseholdShape";
 import { QuestList } from "@/features/quests/QuestList";
 import { Sparkles } from "lucide-react";
+import type { HomeDinosaurState } from "@/features/companion/companion-state";
 
-export function TodayView({ state, activeMember, onSelectQuest, onQuickAdd }: { state: GameState; activeMember: HouseholdMember; onSelectQuest: (quest: DailyQuest) => void; onQuickAdd: () => void }) {
+export function TodayView({
+  state,
+  activeMember,
+  dinosaurState,
+  homeEnergy,
+  onSelectQuest,
+  onQuickAdd,
+}: {
+  state: GameState;
+  activeMember: HouseholdMember;
+  dinosaurState: HomeDinosaurState;
+  homeEnergy: number;
+  onSelectQuest: (quest: DailyQuest) => void;
+  onQuickAdd: () => void;
+}) {
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const balances = contributionBalance(state, since);
   const outstanding = state.quests.filter((quest) => !["completed", "cancelled"].includes(quest.state));
   const message = activeMember.role === "child"
-    ? `${outstanding.length} things are waiting for our team.`
-    : `${outstanding.length} household needs are open. Join one or do one together.`;
+    ? `${outstanding.length} things need our team today. Which one shall we help with?`
+    : `${outstanding.length} household needs are open. Join one alone or do one together.`;
 
   return (
     <>
       <section className="welcome-strip" aria-label="Household encouragement"><Sparkles size={18} aria-hidden="true" /><p>{message}</p></section>
-      <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} onSelectQuest={(id) => {
+      <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={homeEnergy} onSelectQuest={(id) => {
         const quest = state.quests.find((candidate) => candidate.id === id);
         if (quest) onSelectQuest(quest);
       }} />

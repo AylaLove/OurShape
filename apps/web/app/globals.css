@@ -10,6 +10,8 @@
   --gold: #e2aa37;
   --blue: #3c7f9d;
   --green: #3b8f69;
+  --violet: #6f64b8;
+  --sun: #f2c94c;
   --shadow: 0 8px 24px rgba(25, 60, 51, 0.08);
 }
 
@@ -86,6 +88,10 @@ h3 {
   min-height: 100vh;
   margin: 0 auto;
   padding: max(18px, env(safe-area-inset-top)) 18px calc(94px + env(safe-area-inset-bottom));
+}
+
+.app-shell--child {
+  --canvas: #eef7f2;
 }
 
 .topbar,
@@ -283,6 +289,49 @@ h3 {
   transform: translateX(-50%);
 }
 
+.home-dinosaur {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+}
+
+.home-dinosaur img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 14px rgba(31, 68, 57, 0.18));
+}
+
+.home-dinosaur--small {
+  width: 84px;
+}
+
+.home-dinosaur--medium {
+  width: clamp(118px, 32vw, 168px);
+}
+
+.home-dinosaur--large {
+  width: clamp(158px, 43vw, 245px);
+}
+
+.home-dinosaur--encouraging,
+.home-dinosaur--celebrating,
+.home-dinosaur--sharing-energy {
+  animation: dinosaur-lift 1.8s ease-in-out infinite;
+}
+
+.home-dinosaur--carrying-energy img,
+.home-dinosaur--sharing-energy img {
+  filter: drop-shadow(0 0 16px rgba(242, 201, 76, 0.7)) drop-shadow(0 12px 14px rgba(31, 68, 57, 0.16));
+}
+
+@keyframes dinosaur-lift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
 @media (min-width: 760px) {
   .app-shell {
     padding-top: 30px;
@@ -315,5 +364,13 @@ h3 {
 
   .demo-banner span:last-child {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-dinosaur--encouraging,
+  .home-dinosaur--celebrating,
+  .home-dinosaur--sharing-energy {
+    animation: none;
   }
 }

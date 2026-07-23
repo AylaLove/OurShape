@@ -1,6 +1,8 @@
 import { balancePolygonPoints, regularPolygonPoints, type DailyQuest, type Household, type HouseholdMember, type MemberBalance } from "@family-game/domain";
 import { BookOpen, Flower2, Home, Shirt, Sparkles, Utensils } from "lucide-react";
 import type { CSSProperties } from "react";
+import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
+import type { HomeDinosaurState } from "@/features/companion/companion-state";
 
 const ICONS = { dishes: Utensils, laundry: Shirt, book: BookOpen, plant: Flower2, home: Home, wood: Home, sparkle: Sparkles };
 
@@ -9,12 +11,16 @@ export function HouseholdShape({
   quests,
   balances,
   activeMember,
+  dinosaurState,
+  homeEnergy,
   onSelectQuest,
 }: {
   household: Household;
   quests: DailyQuest[];
   balances: MemberBalance[];
   activeMember: HouseholdMember;
+  dinosaurState: HomeDinosaurState;
+  homeEnergy: number;
   onSelectQuest: (questId: string) => void;
 }) {
   const basePoints = regularPolygonPoints(household.members.length);
@@ -32,9 +38,9 @@ export function HouseholdShape({
       <div className="shape__heading">
         <div>
           <p className="eyebrow">OUR SHAPE</p>
-          <h2 id="shape-title">What the home needs</h2>
+          <h2 id="shape-title">Our home today</h2>
         </div>
-        <span className="shape__status">{openQuests.length} waiting</span>
+        <span className="shape__status"><Sparkles size={13} /> {homeEnergy} Home Energy</span>
       </div>
 
       <div className="shape__stage">
@@ -76,8 +82,11 @@ export function HouseholdShape({
             );
           })}
         </div>
+        <div className="shape__companion">
+          <HomeDinosaur state={dinosaurState} priority />
+        </div>
       </div>
-      <p className="shape__caption">{activeMember.role === "child" ? "Every helpful action brings our household shape to life." : "Verified teamwork gently shapes the home. Capacity matters more than equal scores."}</p>
+      <p className="shape__caption">{activeMember.role === "child" ? "Work together, collect Home Energy, and help our shape glow." : "Only verified help creates Home Energy. The shape compares contribution with each person’s agreed capacity."}</p>
     </section>
   );
 }
