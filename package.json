@@ -7,14 +7,19 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm --workspace @family-game/web run dev",
-    "build": "npm --workspace @family-game/web run build",
-    "typecheck": "npm --workspace @family-game/web run typecheck",
+    "dev": "pnpm --filter @family-game/web dev",
+    "build": "pnpm --filter @family-game/web build",
+    "typecheck": "pnpm --filter @family-game/web typecheck",
+    "test": "vitest run",
+    "schema-check": "node scripts/schema-contract-check.mjs",
     "health": "node scripts/project-health.mjs",
-    "check": "npm run typecheck && npm run health"
+    "check": "pnpm typecheck && pnpm test && pnpm schema-check && pnpm health"
   },
+  "devDependencies": {
+    "vitest": "latest"
+  },
+  "packageManager": "pnpm@11.9.0",
   "engines": {
     "node": ">=20.0.0"
   }
 }
-

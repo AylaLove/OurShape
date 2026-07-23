@@ -4,6 +4,8 @@ export const DEMO_HOUSEHOLD: Household = {
   id: "demo-household",
   name: "Our Home",
   timezone: "Africa/Johannesburg",
+  quietHoursStart: "20:00",
+  quietHoursEnd: "07:00",
   members: [
     {
       id: "demo-ayla",
@@ -12,6 +14,8 @@ export const DEMO_HOUSEHOLD: Household = {
       initials: "A",
       role: "adult",
       colour: "#ee6c58",
+      pointLabel: "Chill Points",
+      contributionTarget: 10,
     },
     {
       id: "demo-partner",
@@ -20,6 +24,8 @@ export const DEMO_HOUSEHOLD: Household = {
       initials: "R",
       role: "adult",
       colour: "#2b78a0",
+      pointLabel: "Chill Points",
+      contributionTarget: 10,
     },
     {
       id: "demo-child",
@@ -28,7 +34,8 @@ export const DEMO_HOUSEHOLD: Household = {
       initials: "S",
       role: "child",
       colour: "#e4a72e",
+      pointLabel: "Watch Points",
+      contributionTarget: 4,
     },
   ],
 };
-

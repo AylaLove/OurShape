@@ -1,0 +1,38 @@
+title,previous_owner,recurrence,weekday,previous_value,suggested_kind,suggested_effort,visibility,review_note
+Drum Lesson,Raen,weekly,,1,personal,light,household,Confirm weekday and whether this is participation or personal development
+Studio Operator,Raen,weekly,Wednesday,1,personal,light,household,Confirm meaning
+Dishes,Ayla,when_needed,,1,open,light,household,Good quick-add template
+Fetch Wood,Ayla,when_needed,,1,open,light,household,Good open quest
+Clean Fire,Sage,when_needed,,1,care,light,household,Use child-safe instruction and adult supervision rule
+Reading,Sage,when_needed,,1,personal,light,household,Keep if it belongs in family participation
+Clean Bedroom,Ayla,when_needed,,1,personal,medium,household,Could rotate or be personal
+Weed the Garden,Ayla,when_needed,,2,duo,medium,household,Good shared quest
+Carrying Stuff,Raen,when_needed,,1,open,light,household,Needs clearer title before import
+Breakfast,Sage,when_needed,,1,care,light,household,Clarify prepare or clear breakfast
+Rolling Joint,Raen,when_needed,,1,personal,light,adult_only,Exclude from child responses and review whether it belongs in the app
+Toilet,Sage,daily,,1,personal,light,household,Clarify clean toilet or personal routine
+Cooking,Raen,daily,,1,care,medium,household,Could be duo
+Firekeeper,Ayla,daily,,1,care,light,household,Add safety guidance
+Sweeping,Ayla,daily,,1,open,light,household,Good rotating quest
+Tidy Kitchen,Ayla,daily,,1,open,medium,household,Good recurring quest
+School,Sage,daily,,1,personal,light,household,Probably routine not chore; decide whether it earns points
+School Lunch,Sage,daily,,1,care,light,household,Clarify pack or unpack lunch
+Cook Supper,Ayla,daily,,1,care,medium,household,Good duo or care quest
+Swimming,Sage,weekly,Thursday,1,personal,light,household,Probably routine; decide whether it earns points
+Living Room,Sage,weekly,Sunday,2,open,medium,household,Good recurring quest
+Water Plant,Ayla,every_4_days,,1,care,light,household,Rename Water plants
+Bathroom,Sage,weekly,Monday,2,open,medium,household,Child-safe scope needed
+Rubbish,Raen,weekly,Monday,1,open,light,household,Good recurring quest
+Recycling,Raen,weekly,Tuesday,1,open,light,household,Good recurring quest
+Kitchen,Ayla,weekly,Friday,2,open,medium,household,Clarify difference from Tidy Kitchen
+Compost,Raen,every_3_days,,2,care,medium,household,Good recurring quest
+Dusting,Ayla,weekly,Saturday,1,open,light,household,Good rotating quest
+Homework,Sage,weekly,Saturday,1,personal,light,household,Probably routine; decide whether it earns points
+Pack Away Laundry,Ayla,weekly,Saturday,1,duo,medium,household,Good collaboration quest
+Laundry,Ayla,weekly,,2,duo,medium,household,Confirm schedule and scope
+Shopping,Raen,weekly,Tuesday,1,duo,medium,household,Good shared quest
+Tennis,Sage,weekly,Tuesday,1,personal,light,household,Probably routine; decide whether it earns points
+Market,Ayla,weekly,Wednesday,1,duo,medium,household,Good shared quest
+Guitar Lesson,Ayla,weekly,Wednesday,1,personal,light,household,Probably routine; decide whether it earns points
+Financial Admin,Ayla,every_4_weeks,Friday,4,personal,major,adult_only,Chore only; finance records remain outside this app
+Clean Windows,Sage,unknown,,4,big,major,household,Confirm recurrence and child-safe division of work

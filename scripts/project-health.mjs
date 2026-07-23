@@ -1,12 +1,14 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = fileURLToPath(new URL("../", import.meta.url));
 const required = [
   "README.md",
   "docs/PRODUCT_CONTRACT.md",
   "docs/ARCHITECTURE.md",
   "docs/DECISIONS.md",
+  "docs/IMPLEMENTATION_STATUS.md",
   "apps/web/app/page.tsx",
   "packages/domain/src/index.ts",
 ];
@@ -45,7 +47,9 @@ for (const file of await walk(root)) {
   const lines = source.split("\n").length;
 
   if (lines > 400) problems.push(`${path} has ${lines} lines; review its ownership before extending it.`);
-  if (/localStorage\s*\./.test(source)) problems.push(`${path} uses localStorage. Confirm it is disposable UI state only.`);
+  if (/localStorage\s*\./.test(source) && !path.endsWith("project-health.mjs")) {
+    problems.push(`${path} uses localStorage. Confirm it is disposable UI state only.`);
+  }
   if (/service[_-]?role/i.test(source) && !path.endsWith("project-health.mjs")) {
     problems.push(`${path} mentions a service-role secret. Confirm it is server-only.`);
   }
@@ -58,4 +62,3 @@ if (problems.length) {
 }
 
 console.log("Project health check passed.");
-

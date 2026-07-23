@@ -8,24 +8,28 @@ The repository is intentionally separate from The Hearth Mastery. It starts with
 
 ## Current status
 
-This first checkpoint contains:
+The repository now contains a complete playable vertical slice for one household:
 
-- the approved product contract;
-- architecture guardrails and decision records;
-- a Next.js and TypeScript application shell;
-- separate feature boundaries for households, quests, geometry, gratitude, and rewards;
-- a code-native three-person household board;
-- no real authentication or persistent data yet.
+- a living three-person household shape;
+- adult and parent-managed child views;
+- join, collaborate, hold-to-finish, endorsement, gratitude, points, rewards, and history;
+- tested domain rules that prevent self-endorsement and duplicate rewards;
+- recurring quest generation that preserves earlier history;
+- a reviewed Flatastic import sheet;
+- a Progressive Web App shell with a service worker and manifest;
+- Supabase/Postgres migrations with household isolation and secure action functions.
 
-The visible data is temporary demonstration data. It must be replaced by Supabase-backed household data in the next implementation batch.
+The running interface is deliberately labelled **Private playable demo**. It uses resettable in-memory data so the product can be tested before real family accounts are connected. The database design exists, but cross-phone authentication, realtime sync, offline retry, and deployment still require a dedicated Supabase project and host credentials.
+
+See [Implementation Status](docs/IMPLEMENTATION_STATUS.md) for the exact handoff boundary.
 
 ## Local setup
 
-Node.js 20 or newer is required.
+Node.js 20 or newer and pnpm are required.
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Then open `http://127.0.0.1:3000`.
@@ -41,7 +45,8 @@ Do not put real credentials in source files or commit `.env.local`.
 ## Quality checks
 
 ```bash
-npm run check
+pnpm check
+pnpm build
 ```
 
 The health check protects the repository from the prototype problems already encountered elsewhere: giant files, accidental local-storage truth, missing architectural boundaries, and committed secrets.
@@ -54,7 +59,7 @@ apps/web/                 User-facing phone application
   components/             Shared presentation components
   features/               Domain-specific interface modules
 packages/domain/          Shared types and business language
-supabase/                 Future migrations and database documentation
+supabase/                 Postgres migrations and database documentation
 docs/                     Product contract and architecture decisions
 scripts/                  Repository health checks
 ```
@@ -62,4 +67,3 @@ scripts/                  Repository health checks
 ## Product name
 
 "Family Participation Game" is a working title, not settled branding.
-

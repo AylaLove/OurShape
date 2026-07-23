@@ -1,22 +1,23 @@
 import { Gift, Hand, Home, Users } from "lucide-react";
 
-const items = [
-  { label: "Today", icon: Home, active: true },
-  { label: "Thanks", icon: Hand, active: false },
-  { label: "Rewards", icon: Gift, active: false },
-  { label: "Family", icon: Users, active: false },
+export type AppSection = "today" | "thanks" | "rewards" | "family";
+
+const items: Array<{ id: AppSection; label: string; icon: typeof Home }> = [
+  { id: "today", label: "Today", icon: Home },
+  { id: "thanks", label: "Thanks", icon: Hand },
+  { id: "rewards", label: "Rewards", icon: Gift },
+  { id: "family", label: "Family", icon: Users },
 ];
 
-export function AppNav() {
+export function AppNav({ active, onChange }: { active: AppSection; onChange: (section: AppSection) => void }) {
   return (
     <nav className="app-nav" aria-label="Main navigation">
-      {items.map(({ label, icon: Icon, active }) => (
-        <span className={active ? "app-nav__item app-nav__item--active" : "app-nav__item"} key={label} aria-current={active ? "page" : undefined}>
-          <Icon size={21} strokeWidth={active ? 2.2 : 1.7} />
+      {items.map(({ id, label, icon: Icon }) => (
+        <button className={active === id ? "app-nav__item app-nav__item--active" : "app-nav__item"} key={id} type="button" onClick={() => onChange(id)} aria-current={active === id ? "page" : undefined}>
+          <Icon size={21} strokeWidth={active === id ? 2.2 : 1.7} />
           <span>{label}</span>
-        </span>
+        </button>
       ))}
     </nav>
   );
 }
-

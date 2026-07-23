@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@family-game/domain": "*",
+    "@family-game/domain": "workspace:*",
+    "@supabase/ssr": "latest",
+    "@supabase/supabase-js": "latest",
     "lucide-react": "latest",
     "next": "latest",
     "react": "latest",
@@ -19,7 +21,6 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "typescript": "latest"
+    "typescript": "5.9.3"
   }
 }
-
