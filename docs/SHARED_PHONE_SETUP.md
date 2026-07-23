@@ -7,6 +7,7 @@ The repository now contains the complete data contract needed for the first thre
 - adult authentication through Supabase Auth;
 - a household created by the first adult;
 - a parent-managed child profile without an email account;
+- a limited child-phone session claimed with a short-lived six-digit parent code;
 - a one-use, expiring invitation for the second adult;
 - household-isolated quest, gratitude, point, reward, and history records;
 - one household snapshot shaped exactly like the tested game state;
@@ -26,13 +27,18 @@ The current interface is still intentionally using resettable demo data. No fake
 6. Use `add_managed_child` to create the child profile.
 7. Use `create_household_invite` to produce a short-lived invitation for the second adult.
 8. Sign in as the second adult and use `accept_household_invite`.
-9. Seed the reviewed household quest templates and rewards.
-10. Switch the interface from demo repository to `SupabaseGameRepository`.
+9. Enable Supabase anonymous sign-in for the child-device flow.
+10. On the parent phone, use `create_child_device_code` for the child profile.
+11. On the child phone, start an anonymous session and use `claim_child_device`.
+12. Seed the reviewed household quest templates and rewards.
+13. Switch the interface from demo repository to `SupabaseGameRepository`.
 
 ## Required proof before calling it shared
 
 - Both adults can sign in independently.
 - The parent can act through the child profile.
+- The child phone can act only as the claimed child profile.
+- Revoking the child-device record removes access.
 - The second adult cannot read another household.
 - A quest joined on one phone appears on the other after refresh.
 - A completion can only be endorsed by a non-participant.
@@ -48,4 +54,3 @@ The current interface is still intentionally using resettable demo data. No fake
 - Do not place the service-role key in browser code.
 - Do not enable realtime subscriptions until the snapshot and secure actions pass the two-phone refresh test.
 - Do not invite friend households until row-level isolation has been tested with two separate households.
-

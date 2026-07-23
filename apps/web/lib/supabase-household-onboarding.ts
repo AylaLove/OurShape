@@ -80,5 +80,29 @@ export class SupabaseHouseholdOnboarding {
     fail("Could not join the household", error);
     return membership(data);
   }
-}
 
+  async createChildDeviceCode(childMemberId: string, validMinutes = 10): Promise<string> {
+    const { data, error } = await this.client.rpc("create_child_device_code", {
+      target_child: childMemberId,
+      valid_minutes: validMinutes,
+    });
+    fail("Could not create the child device code", error);
+    if (typeof data !== "string") throw new Error("The child device code was invalid.");
+    return data;
+  }
+
+  async claimChildDevice(code: string): Promise<MembershipResult> {
+    const { data, error } = await this.client.rpc("claim_child_device", {
+      device_code: code,
+    });
+    fail("Could not connect the child device", error);
+    return membership(data);
+  }
+
+  async revokeChildDevice(accessId: string): Promise<void> {
+    const { error } = await this.client.rpc("revoke_child_device", {
+      target_access: accessId,
+    });
+    fail("Could not disconnect the child device", error);
+  }
+}

@@ -30,6 +30,7 @@ The child profile uses simpler language, spoken quest instructions, large contro
 - Optional gratitude phrases saved with the verified endorsement.
 - A Supabase repository adapter that reads one profile-safe household snapshot.
 - One-use expiring invitations for adding the second adult account.
+- Revocable child-device access claimed through a short-lived parent code.
 
 ## What still needs external setup
 

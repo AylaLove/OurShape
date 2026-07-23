@@ -16,7 +16,11 @@ const invites = await readFile(
   new URL("../supabase/migrations/202607230002_household_invites.sql", import.meta.url),
   "utf8",
 );
-const allSql = [core, actions, snapshot, invites].join("\n");
+const childDevices = await readFile(
+  new URL("../supabase/migrations/202607230003_child_device_access.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites, childDevices].join("\n");
 
 const requiredTables = [
   "households",
@@ -36,6 +40,7 @@ const requiredTables = [
   "kudos",
   "audit_events",
   "household_invites",
+  "child_device_access",
 ];
 
 const requiredFunctions = [
@@ -51,6 +56,9 @@ const requiredFunctions = [
   "household_snapshot",
   "create_household_invite",
   "accept_household_invite",
+  "create_child_device_code",
+  "claim_child_device",
+  "revoke_child_device",
 ];
 
 const failures = [];
@@ -108,6 +116,18 @@ if (!invites.includes("token_hash = digest(invite_token, 'sha256')")) {
 
 if (!invites.includes("or invite_row.expires_at <= now()")) {
   failures.push("Expired household invitations are not rejected.");
+}
+
+if (!childDevices.includes("access.claimed_by = auth.uid()")) {
+  failures.push("Child-device membership is not tied to the authenticated device.");
+}
+
+if (!childDevices.includes("Adult accounts cannot become child devices")) {
+  failures.push("Adult accounts are not protected from child-device claiming.");
+}
+
+if (!childDevices.includes("access.revoked_at is null")) {
+  failures.push("Revoked child devices retain access.");
 }
 
 if (failures.length) {
