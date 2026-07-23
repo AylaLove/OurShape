@@ -85,6 +85,16 @@ Each vertex represents a member. Edges hold shared work between people. The cent
 
 The shape responds to verified contribution units compared with agreed contribution targets over a rolling seven-day window. Targets account for age, ability, health, school, work, time, and custody. Adults may inspect detailed ratios. Children see only supportive household language and are never identified as the cause of imbalance.
 
+## Home Dinosaur and Home Energy
+
+An original young triceratops is the household companion. It lives with the family shape and helps a child understand the game through expression, posture, movement, and sound.
+
+The dinosaur responds to household states: resting, noticing a need, welcoming a participant, encouraging cooperation, holding completed energy while work waits for thanks, celebrating appreciation, and sleeping during quiet hours.
+
+The dinosaur represents the household as a whole. It may never become hungry, sick, frightened, neglected, disappointed, or distressed because work remains unfinished. It does not compare people or communicate blame.
+
+Verified completion creates non-spendable Home Energy. Home Energy belongs to the household, visually strengthens the polygon and companion habitat, and remains separate from personal appreciation points. It never decreases as punishment.
+
 ## Child experience
 
 The child profile is parent-managed and does not require an email address. The child must be able to:
@@ -130,4 +140,3 @@ The first release does not include:
 - AI-generated household decisions;
 - sexual rewards;
 - negative scores or punishment mechanics.
-

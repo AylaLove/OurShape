@@ -12,4 +12,5 @@
 | D-008 | Protect the child from blame views | The game fosters participation and may not make a child responsible for household imbalance | Accepted |
 | D-009 | Start with code-native geometry | It is responsive, testable, accessible, and cheaper to iterate than generated imagery | Accepted |
 | D-010 | Treat the product name as provisional | Branding should follow a functioning household beta | Accepted |
-
+| D-011 | Use an original young triceratops as the household companion | The dinosaur gives the six-year-old an emotional guide while fitting the three-person triangle without copying another product | Accepted |
+| D-012 | Derive non-spendable Home Energy from endorsed work | Household progress needs a shared visual reward that remains separate from personal points and never becomes punishment | Accepted |
