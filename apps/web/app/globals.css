@@ -1,18 +1,22 @@
 :root {
-  --ink: #172c27;
-  --muted: #66766f;
-  --surface: #ffffff;
-  --canvas: #eef3ef;
-  --line: #d7e1da;
-  --forest: #163a31;
-  --mint: #dcece4;
-  --coral: #ef6d5b;
-  --gold: #e2aa37;
-  --blue: #3c7f9d;
-  --green: #3b8f69;
-  --violet: #6f64b8;
-  --sun: #f2c94c;
-  --shadow: 0 8px 24px rgba(25, 60, 51, 0.08);
+  color-scheme: dark;
+  --ink: #f4f1e8;
+  --muted: #a7b4ae;
+  --surface: #151e1b;
+  --surface-raised: #1b2723;
+  --surface-soft: #20302a;
+  --canvas: #09100e;
+  --line: #2d3b36;
+  --forest: #71d4a4;
+  --mint: #20372e;
+  --coral: #ff806d;
+  --gold: #f0bd53;
+  --blue: #64afd1;
+  --green: #63c790;
+  --violet: #9b8bda;
+  --sun: #f4d46b;
+  --button-ink: #07110d;
+  --shadow: 0 10px 28px rgba(0, 0, 0, 0.34);
 }
 
 * {
@@ -91,7 +95,7 @@ h3 {
 }
 
 .app-shell--child {
-  --canvas: #eef7f2;
+  --canvas: #0c1512;
 }
 
 .topbar,
@@ -129,7 +133,7 @@ h3 {
   border: 0;
   border-radius: 50%;
   background: var(--forest);
-  color: #fff;
+  color: var(--button-ink);
   font-size: 27px;
   line-height: 1;
 }
@@ -155,7 +159,7 @@ h3 {
   border: 2px solid var(--canvas);
   border-radius: 50%;
   background: var(--coral);
-  color: #fff;
+  color: #130805;
   font-size: 10px;
   font-weight: 800;
 }
@@ -222,7 +226,8 @@ h3 {
   min-height: 69px;
   padding: 8px max(10px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
   border-top: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(13, 20, 17, 0.97);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.22);
 }
 
 .app-nav__item {
@@ -233,7 +238,7 @@ h3 {
   gap: 4px;
   border: 0;
   background: transparent;
-  color: #788980;
+  color: #82918a;
   font-size: 10px;
   font-weight: 650;
 }
@@ -255,7 +260,7 @@ h3 {
   border: 0;
   border-radius: 8px;
   background: var(--forest);
-  color: #fff;
+  color: var(--button-ink);
   font-weight: 750;
 }
 
@@ -281,7 +286,7 @@ h3 {
   padding: 13px 16px;
   border-radius: 8px;
   background: var(--forest);
-  color: #fff;
+  color: var(--button-ink);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   font-size: 13px;
   line-height: 1.35;

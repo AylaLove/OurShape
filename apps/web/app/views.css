@@ -13,18 +13,18 @@
   height: 52px;
   place-items: center;
   border-radius: 50%;
-  background: #fee9e5;
-  color: #a84334;
+  background: #3a211d;
+  color: var(--coral);
 }
 
 .view-heading__icon--gold {
-  background: #fff3d4;
-  color: #8d6210;
+  background: #382e17;
+  color: var(--gold);
 }
 
 .view-heading__icon--blue {
-  background: #e1f0f5;
-  color: #28657f;
+  background: #1b3340;
+  color: var(--blue);
 }
 
 .view-intro {
@@ -40,10 +40,10 @@
   gap: 11px;
   margin-bottom: 22px;
   padding: 14px;
-  border: 1px solid #ebdca8;
+  border: 1px solid #5a4f29;
   border-radius: 8px;
-  background: #fff9e2;
-  color: #5d4b1a;
+  background: #292415;
+  color: #f0d782;
   font-size: 13px;
   line-height: 1.45;
 }
@@ -55,9 +55,9 @@
   gap: 4px;
   margin: 0 -18px 24px;
   padding: 8px 18px 13px;
-  border-top: 1px solid #ebdca8;
-  border-bottom: 1px solid #ebdca8;
-  background: #fff6d3;
+  border-top: 1px solid #5a4f29;
+  border-bottom: 1px solid #5a4f29;
+  background: #292414;
 }
 
 .gratitude-hero h2 {
@@ -66,7 +66,7 @@
 }
 
 .gratitude-hero p:last-child {
-  color: #66531d;
+  color: #d8c274;
   font-size: 12px;
   line-height: 1.4;
 }
@@ -189,8 +189,8 @@
   padding: 23px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: #fff9e4;
-  color: #5e4914;
+  background: #292415;
+  color: #f3d477;
 }
 
 .points-balance strong {
@@ -229,7 +229,7 @@
 }
 
 .reward span {
-  color: #94600f;
+  color: var(--gold);
   font-size: 11px;
   font-weight: 750;
 }
@@ -277,9 +277,9 @@
 }
 
 .child-balance {
-  border-color: #c8dfd3;
-  background: #ecf6f0;
-  color: #285b47;
+  border-color: #315245;
+  background: #14271f;
+  color: #9de1bd;
 }
 
 .child-balance h2 {
@@ -318,11 +318,11 @@
 }
 
 .capacity-row strong,
-.capacity-row span {
+.capacity-row > div span {
   display: block;
 }
 
-.capacity-row span {
+.capacity-row > div span {
   margin-top: 2px;
   color: var(--muted);
   font-size: 10px;
