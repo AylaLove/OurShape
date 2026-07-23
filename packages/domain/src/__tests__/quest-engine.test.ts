@@ -4,6 +4,7 @@ import {
   joinQuest,
   markQuestDone,
   pointBalance,
+  redeemReward,
   regularPolygonPoints,
   type GameState,
 } from "..";
@@ -99,5 +100,57 @@ describe("quest participation and gratitude", () => {
 describe("household geometry", () => {
   it("supports every planned household size", () => {
     for (let count = 2; count <= 6; count += 1) expect(regularPolygonPoints(count)).toHaveLength(count);
+  });
+});
+
+describe("reward payments", () => {
+  it("deducts the reward cost from the chooser's points", () => {
+    const state = fixture();
+    state.pointLedger.push({
+      id: "points-earned",
+      householdId: state.household.id,
+      memberId: "child",
+      questId: "quest-one",
+      amount: 5,
+      reason: "quest_endorsed",
+      idempotencyKey: "earned:child",
+      createdAt: "2026-07-22T08:00:00Z",
+    });
+    state.rewards.push({
+      id: "reward-watch",
+      householdId: state.household.id,
+      title: "Watch time",
+      icon: "screen",
+      cost: 3,
+      audience: "child",
+      requiresConsent: true,
+    });
+
+    const result = redeemReward(state, "reward-watch", "child", "2026-07-22T09:00:00Z");
+
+    expect(result.ok).toBe(true);
+    expect(pointBalance(result.state, "child")).toBe(2);
+    expect(result.state.pointLedger.at(-1)?.amount).toBe(-3);
+    expect(result.state.pointLedger.at(-1)?.reason).toBe("reward_redeemed");
+    expect(result.state.history[0].message).toContain("Watch time");
+  });
+
+  it("does not create a payment when the chooser cannot afford the reward", () => {
+    const state = fixture();
+    state.rewards.push({
+      id: "reward-outing",
+      householdId: state.household.id,
+      title: "Choose an outing",
+      icon: "outing",
+      cost: 8,
+      audience: "all",
+      requiresConsent: true,
+    });
+
+    const result = redeemReward(state, "reward-outing", "child", "2026-07-22T09:00:00Z");
+
+    expect(result.ok).toBe(false);
+    expect(pointBalance(result.state, "child")).toBe(0);
+    expect(result.state.redemptions).toHaveLength(0);
   });
 });

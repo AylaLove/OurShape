@@ -22,7 +22,7 @@ export function RewardsView({ state, activeMember, onRedeem }: { state: GameStat
             <button className="reward" type="button" key={reward.id} onClick={() => onRedeem(reward.id)} disabled={!affordable}>
               <Icon size={28} strokeWidth={1.7} />
               <strong>{reward.title}</strong>
-              <span>{reward.cost} points</span>
+              <span>Spend {reward.cost} points</span>
             </button>
           );
         })}
