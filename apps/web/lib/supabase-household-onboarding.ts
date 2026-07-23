@@ -1,0 +1,84 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+type MembershipResult = {
+  householdId: string;
+  memberId: string;
+};
+
+function fail(context: string, error: { message: string } | null): void {
+  if (error) throw new Error(`${context}: ${error.message}`);
+}
+
+function membership(data: unknown): MembershipResult {
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || typeof row !== "object") throw new Error("Membership setup returned no result.");
+  const result = row as { household_id?: string; member_id?: string };
+  if (!result.household_id || !result.member_id) throw new Error("Membership setup returned an invalid result.");
+  return { householdId: result.household_id, memberId: result.member_id };
+}
+
+export class SupabaseHouseholdOnboarding {
+  constructor(private readonly client: SupabaseClient) {}
+
+  async createHousehold(
+    homeName: string,
+    timezone: string,
+    ownerName: string,
+    ownerInitials: string,
+    ownerColour = "#ef6d5b",
+  ): Promise<MembershipResult> {
+    const { data, error } = await this.client.rpc("create_household_with_owner", {
+      home_name: homeName,
+      home_timezone: timezone,
+      owner_name: ownerName,
+      owner_initials: ownerInitials,
+      owner_colour: ownerColour,
+    });
+    fail("Could not create the household", error);
+    return membership(data);
+  }
+
+  async addManagedChild(
+    householdId: string,
+    childName: string,
+    childInitials: string,
+    childColour = "#e2aa37",
+  ): Promise<string> {
+    const { data, error } = await this.client.rpc("add_managed_child", {
+      target_household: householdId,
+      child_name: childName,
+      child_initials: childInitials,
+      child_colour: childColour,
+    });
+    fail("Could not add the child profile", error);
+    if (typeof data !== "string") throw new Error("Child profile setup returned an invalid result.");
+    return data;
+  }
+
+  async createAdultInvite(householdId: string, validHours = 72): Promise<string> {
+    const { data, error } = await this.client.rpc("create_household_invite", {
+      target_household: householdId,
+      valid_hours: validHours,
+    });
+    fail("Could not create the household invitation", error);
+    if (typeof data !== "string") throw new Error("The household invitation was invalid.");
+    return data;
+  }
+
+  async acceptAdultInvite(
+    token: string,
+    name: string,
+    initials: string,
+    colour = "#3c7f9d",
+  ): Promise<MembershipResult> {
+    const { data, error } = await this.client.rpc("accept_household_invite", {
+      invite_token: token,
+      adult_name: name,
+      adult_initials: initials,
+      adult_colour: colour,
+    });
+    fail("Could not join the household", error);
+    return membership(data);
+  }
+}
+

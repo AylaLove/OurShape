@@ -16,3 +16,5 @@
 | D-012 | Derive non-spendable Home Energy from endorsed work | Household progress needs a shared visual reward that remains separate from personal points and never becomes punishment | Accepted |
 | D-013 | Use four visible daily quest stages | Needs us, Doing, Waiting for thanks, and Celebrated make the social loop understandable without reading an administrative task list | Accepted |
 | D-014 | Let the companion react to real domain events | The dinosaur should explain state and reward participation, never become an unrelated decorative animation or a second source of progress truth | Accepted |
+| D-015 | Load shared state through one profile-safe household snapshot | One coherent response is easier to validate and less likely to expose adult-only data than many unrelated browser queries | Accepted |
+| D-016 | Add adults with expiring one-use invitations | A real three-phone household needs a safe joining path without exposing database administration to the family | Accepted |

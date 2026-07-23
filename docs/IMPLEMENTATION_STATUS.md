@@ -28,6 +28,8 @@ The child profile uses simpler language, spoken quest instructions, large contro
 - Non-spendable Home Energy derived from uniquely endorsed quests.
 - A four-stage daily board: Needs us, Doing, Waiting for thanks, and Celebrated.
 - Optional gratitude phrases saved with the verified endorsement.
+- A Supabase repository adapter that reads one profile-safe household snapshot.
+- One-use expiring invitations for adding the second adult account.
 
 ## What still needs external setup
 
@@ -45,4 +47,4 @@ These are not honest to claim without a real Supabase project and private previe
 
 ## Recommended next checkpoint
 
-Connect one development Supabase project, implement the real repository adapter behind the existing `GameRepository` boundary, and prove the same join-to-thanks loop on two adult accounts and one parent-managed child profile. After that proof, conduct the first short household playtest before adding more game systems.
+Connect one development Supabase project and switch the interface from the demo repository to the prepared `SupabaseGameRepository`. Then prove the same join-to-thanks loop on two adult accounts and one parent-managed child profile. After that proof, conduct the first short household playtest before adding more game systems.

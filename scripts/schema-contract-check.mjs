@@ -8,6 +8,15 @@ const actions = await readFile(
   new URL("../supabase/migrations/202607220002_secure_actions.sql", import.meta.url),
   "utf8",
 );
+const snapshot = await readFile(
+  new URL("../supabase/migrations/202607230001_household_snapshot.sql", import.meta.url),
+  "utf8",
+);
+const invites = await readFile(
+  new URL("../supabase/migrations/202607230002_household_invites.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites].join("\n");
 
 const requiredTables = [
   "households",
@@ -26,6 +35,7 @@ const requiredTables = [
   "high_fives",
   "kudos",
   "audit_events",
+  "household_invites",
 ];
 
 const requiredFunctions = [
@@ -37,22 +47,25 @@ const requiredFunctions = [
   "redeem_reward",
   "send_high_five",
   "send_kudos",
+  "endorse_completion_with_note",
+  "household_snapshot",
+  "create_household_invite",
+  "accept_household_invite",
 ];
 
 const failures = [];
 
 for (const table of requiredTables) {
-  if (!core.includes(`create table public.${table}`)) {
+  if (!allSql.includes(`create table public.${table}`)) {
     failures.push(`Missing table: ${table}`);
   }
-  if (!core.includes(`alter table public.${table} enable row level security`)) {
+  if (!allSql.includes(`alter table public.${table} enable row level security`)) {
     failures.push(`Row-level security is not enabled for: ${table}`);
   }
 }
 
 for (const functionName of requiredFunctions) {
-  const sql = functionName === "endorse_completion" ? core : actions;
-  if (!sql.includes(`function public.${functionName}`)) {
+  if (!allSql.includes(`function public.${functionName}`)) {
     failures.push(`Missing secure action: ${functionName}`);
   }
 }
@@ -79,6 +92,22 @@ if (!core.includes("unique (completion_id)")) {
 
 if (!core.includes("function public.can_act_as_member")) {
   failures.push("Parent-managed profile authorization is missing.");
+}
+
+if (!snapshot.includes("not reward.private_to_adults or member_role = 'adult'")) {
+  failures.push("Child snapshot filtering for adult-private rewards is missing.");
+}
+
+if (!snapshot.includes("set note = nullif(left(trim(target_note), 120), '')")) {
+  failures.push("Gratitude notes are not preserved by the secure endorsement action.");
+}
+
+if (!invites.includes("token_hash = digest(invite_token, 'sha256')")) {
+  failures.push("Household invitations are not stored and compared as secure hashes.");
+}
+
+if (!invites.includes("or invite_row.expires_at <= now()")) {
+  failures.push("Expired household invitations are not rejected.");
 }
 
 if (failures.length) {

@@ -11,17 +11,19 @@ The repository is intentionally separate from The Hearth Mastery. It starts with
 The repository now contains a complete playable vertical slice for one household:
 
 - a living three-person household shape;
+- a responsive Home Dinosaur whose pose follows real quest state;
+- four visible daily stages: Needs us, Doing, Waiting for thanks, and Celebrated;
 - adult and parent-managed child views;
 - join, collaborate, hold-to-finish, endorsement, gratitude, points, rewards, and history;
 - tested domain rules that prevent self-endorsement and duplicate rewards;
 - recurring quest generation that preserves earlier history;
 - a reviewed Flatastic import sheet;
 - a Progressive Web App shell with a service worker and manifest;
-- Supabase/Postgres migrations with household isolation and secure action functions.
+- Supabase/Postgres migrations with household isolation, secure action functions, a household snapshot, and expiring adult invitations.
 
 The running interface is deliberately labelled **Private playable demo**. It uses resettable in-memory data so the product can be tested before real family accounts are connected. The database design exists, but cross-phone authentication, realtime sync, offline retry, and deployment still require a dedicated Supabase project and host credentials.
 
-See [Implementation Status](docs/IMPLEMENTATION_STATUS.md) for the exact handoff boundary.
+See [Implementation Status](docs/IMPLEMENTATION_STATUS.md) for the exact handoff boundary and [Shared Phone Setup](docs/SHARED_PHONE_SETUP.md) for the controlled database connection path.
 
 ## Local setup
 
