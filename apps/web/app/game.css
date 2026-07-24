@@ -27,7 +27,7 @@
   display: grid;
   min-height: 0;
   flex: 1 1 auto;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 7px;
   overflow: hidden;
 }
@@ -329,11 +329,11 @@
 }
 
 .shape--child .shape__companion {
-  bottom: 1%;
+  bottom: 2%;
 }
 
 .shape--child .home-dinosaur--large {
-  width: clamp(140px, 34vw, 190px);
+  width: clamp(160px, 42vw, 224px);
 }
 
 .shape-quest {
@@ -456,7 +456,7 @@
   z-index: 12;
   top: 0;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
   margin: 0 -4px 18px;
@@ -464,6 +464,12 @@
   border-bottom: 1px solid var(--line);
   background: rgba(9, 16, 14, 0.96);
   backdrop-filter: blur(14px);
+}
+
+.screen-view__actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
 .screen-back-button {
@@ -550,6 +556,40 @@
 .quest-stage--completed .quest-stage__icon {
   background: #19372a;
   color: var(--green);
+}
+
+.quest-stage--repair {
+  padding: 12px;
+  border: 1px solid #745b2f;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2a2115, #17231e);
+}
+
+.quest-stage--repair .quest-stage__icon {
+  background: #4a341d;
+  color: #f2c86d;
+}
+
+.quest--repair {
+  border-color: #745b2f;
+  border-left-color: #f0bd53;
+  background: #241f16;
+}
+
+.quest--repair .quest__icon {
+  background: #48341f;
+  color: #f3cf79;
+}
+
+.repair-label {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border: 1px solid #725b2e;
+  border-radius: 999px;
+  color: #f3cf79;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .quest-stage__heading strong,
@@ -1057,6 +1097,91 @@
   color: var(--forest);
   font-size: 12px;
   font-weight: 750;
+}
+
+.repair-sheet {
+  max-height: 92dvh;
+  overflow-y: auto;
+}
+
+.repair-sheet__intro {
+  margin: -4px 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.repair-sheet__presets {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 15px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.repair-sheet__presets::-webkit-scrollbar {
+  display: none;
+}
+
+.repair-preset {
+  min-height: 38px;
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.repair-preset--selected {
+  border-color: #ad8240;
+  background: #3a2c19;
+  color: #f3cf79;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: 0;
+  background: #101915;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.form-field textarea {
+  min-height: 86px;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(240, 189, 83, 0.12);
+}
+
+.primary-button--repair {
+  gap: 8px;
+  margin-top: 3px;
+  background: #e4b653;
 }
 
 @keyframes patient-nudge {

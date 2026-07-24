@@ -8,7 +8,8 @@ export type QuestKind =
   | "care"
   | "surprise_help"
   | "big"
-  | "rescue";
+  | "rescue"
+  | "repair";
 
 export type QuestState =
   | "needed"
@@ -20,7 +21,7 @@ export type QuestState =
   | "cancelled";
 
 export type EffortSize = "light" | "medium" | "substantial" | "major";
-export type QuestIcon = "dishes" | "laundry" | "book" | "plant" | "home" | "wood" | "sparkle";
+export type QuestIcon = "dishes" | "laundry" | "book" | "plant" | "home" | "wood" | "sparkle" | "repair";
 export type RecurrenceRule =
   | { type: "daily" }
   | { type: "selected_days"; weekdays: number[] }
@@ -156,7 +157,16 @@ export interface HighFive {
 export interface HistoryEvent {
   id: string;
   householdId: string;
-  type: "added" | "joined" | "marked_done" | "thanked" | "needs_more" | "reward_requested" | "high_five";
+  type:
+    | "added"
+    | "joined"
+    | "marked_done"
+    | "thanked"
+    | "needs_more"
+    | "reward_requested"
+    | "high_five"
+    | "repair_created"
+    | "repair_completed";
   actorId: string;
   questId: string | null;
   message: string;

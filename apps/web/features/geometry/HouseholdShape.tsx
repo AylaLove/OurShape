@@ -1,80 +1,12 @@
 "use client";
 
 import { balancePolygonPoints, regularPolygonPoints, type DailyQuest, type Household, type HouseholdMember, type MemberBalance } from "@family-game/domain";
-import { BookOpen, Film, Flower2, Home, Shirt, Sparkles, Utensils } from "lucide-react";
+import { Film, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useState } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { dinosaurMessage, type HomeDinosaurState } from "@/features/companion/companion-state";
 import { homeGoalProgress, type HomeGoal } from "@/features/energy/home-goal";
-import { featuredQuests } from "@/features/quests/quest-presentation";
-
-const ICONS = { dishes: Utensils, laundry: Shirt, book: BookOpen, plant: Flower2, home: Home, wood: Home, sparkle: Sparkles };
-
-type NodePosition = { x: number; y: number; placement: string };
-
-const CHILD_NODE_POSITIONS: NodePosition[] = [
-  { x: 76, y: 108, placement: "shared" },
-  { x: 180, y: 102, placement: "shared" },
-  { x: 284, y: 108, placement: "shared" },
-];
-
-function memberPoint(
-  memberId: string,
-  household: Household,
-  points: ReturnType<typeof regularPolygonPoints>,
-) {
-  const index = household.members.findIndex((member) => member.id === memberId);
-  return index >= 0 ? points[index] : null;
-}
-
-function questNodePosition(
-  quest: DailyQuest,
-  household: Household,
-  points: ReturnType<typeof regularPolygonPoints>,
-  neutralIndex: number,
-): NodePosition {
-  const relatedIds = quest.participantIds.length
-    ? quest.participantIds
-    : quest.suggestedMemberIds;
-
-  if (quest.kind === "personal" && relatedIds[0]) {
-    const point = memberPoint(relatedIds[0], household, points);
-    if (point) {
-      return {
-        x: point.x * 0.52 + 180 * 0.48,
-        y: point.y * 0.52 + 180 * 0.48,
-        placement: "personal",
-      };
-    }
-  }
-
-  if (quest.kind === "duo" && relatedIds.length >= 2) {
-    const first = memberPoint(relatedIds[0], household, points);
-    const second = memberPoint(relatedIds[1], household, points);
-    if (first && second) {
-      return {
-        x: (first.x + second.x) / 2,
-        y: (first.y + second.y) / 2,
-        placement: "duo",
-      };
-    }
-  }
-
-  if (quest.kind === "family") {
-    return { x: 180, y: 142, placement: "family" };
-  }
-
-  const neutralPositions = [
-    { x: 180, y: 118 },
-    { x: 105, y: 200 },
-    { x: 255, y: 200 },
-  ];
-  return {
-    ...neutralPositions[neutralIndex % neutralPositions.length],
-    placement: "shared",
-  };
-}
 
 export function HouseholdShape({
   household,
@@ -85,7 +17,6 @@ export function HouseholdShape({
   homeEnergy,
   homeGoal,
   childView = false,
-  onSelectQuest,
 }: {
   household: Household;
   quests: DailyQuest[];
@@ -95,12 +26,10 @@ export function HouseholdShape({
   homeEnergy: number;
   homeGoal: HomeGoal;
   childView?: boolean;
-  onSelectQuest: (questId: string) => void;
 }) {
   const [dinosaurSpeaking, setDinosaurSpeaking] = useState(false);
   const basePoints = regularPolygonPoints(household.members.length);
   const livePoints = balancePolygonPoints(balances);
-  const nodes = featuredQuests(quests, activeMember.id);
   const pendingEnergy = quests.filter((quest) => quest.state === "pending_endorsement").length;
   const goalProgress = homeGoalProgress(homeGoal, homeEnergy);
   const path = livePoints.map((point) => `${point.x},${point.y}`).join(" ");
@@ -111,7 +40,7 @@ export function HouseholdShape({
       <div className="shape__heading">
         <div>
           <p className="eyebrow">{childView ? "OUR HOME" : "OUR SHAPE"}</p>
-          <h2 id="shape-title">{childView ? "What needs us?" : "Our home today"}</h2>
+          <h2 id="shape-title">{childView ? "Growing together" : "Our home today"}</h2>
         </div>
         {childView ? (
           <div className={goalProgress.unlocked ? "shape__energy-goal shape__energy-goal--unlocked" : "shape__energy-goal"} aria-label={`${goalProgress.current} of ${goalProgress.target} Home Energy toward ${homeGoal.title}`}>
@@ -152,27 +81,6 @@ export function HouseholdShape({
           );
         })}
 
-        <div className="shape__quest-nodes">
-          {nodes.map((quest, index) => {
-            const Icon = ICONS[quest.icon];
-            const position = childView
-              ? CHILD_NODE_POSITIONS[index % CHILD_NODE_POSITIONS.length]
-              : questNodePosition(quest, household, basePoints, index);
-            return (
-              <button
-                className={`shape-quest ${index === 0 ? "shape-quest--primary" : "shape-quest--secondary"} shape-quest--${position.placement} shape-quest--${quest.state}`}
-                type="button"
-                key={quest.id}
-                onClick={() => onSelectQuest(quest.id)}
-                aria-label={`Open ${quest.title}`}
-                style={{ "--quest-x": `${(position.x / 360) * 100}%`, "--quest-y": `${(position.y / 360) * 100}%` } as CSSProperties}
-              >
-                <Icon size={21} strokeWidth={1.8} />
-                <span>{quest.title}</span>
-              </button>
-            );
-          })}
-        </div>
         <div className="shape__companion">
           {childView ? (
             <button
@@ -197,7 +105,7 @@ export function HouseholdShape({
         {childView
           ? dinosaurSpeaking
             ? dinosaurMessage(dinosaurState, pendingEnergy)
-            : "Choose a quest, or tap Dino for a hint."
+            : "Tap Dino to hear how our home is feeling."
           : "Only verified help creates Home Energy. The shape compares contribution with each person’s agreed capacity."}
       </p>
     </section>

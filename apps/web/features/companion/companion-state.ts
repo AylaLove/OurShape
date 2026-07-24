@@ -11,7 +11,8 @@ export type HomeDinosaurState =
   | "carrying-energy"
   | "sharing-energy"
   | "sleeping"
-  | "gratitude";
+  | "gratitude"
+  | "repairing";
 
 export function homeEnergy(state: GameState): number {
   return new Set(
@@ -42,6 +43,14 @@ export function deriveHomeDinosaurState(
   date = new Date(),
 ): HomeDinosaurState {
   if (isQuietHours(state, date)) return "sleeping";
+
+  const openRepair = state.quests.some(
+    (quest) =>
+      quest.kind === "repair"
+      && !["completed", "cancelled"].includes(quest.state)
+      && (quest.suggestedMemberIds.includes(activeMemberId) || quest.participantIds.includes(activeMemberId)),
+  );
+  if (openRepair) return "repairing";
 
   const canThank = state.quests.some(
     (quest) =>
@@ -104,5 +113,7 @@ export function dinosaurMessage(
       return "Choose one quest. Even a small help gives our home energy.";
     case "resting":
       return "Everything is settled. We can enjoy our home.";
+    case "repairing":
+      return "Something needs repairing. Open Quests, make it right, and ask someone to check.";
   }
 }

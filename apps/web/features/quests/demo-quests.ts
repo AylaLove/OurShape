@@ -2,6 +2,25 @@ import type { DailyQuest } from "@family-game/domain";
 
 export const DEMO_QUESTS: DailyQuest[] = [
   {
+    id: "demo-repair",
+    householdId: "demo-household",
+    templateId: null,
+    title: "Return the game pieces",
+    instruction: "Put every game piece back in its box, then ask someone to check it with you.",
+    spokenInstruction: "Put every game piece back in its box. Then ask someone to check it with you.",
+    kind: "repair",
+    state: "needed",
+    effort: "light",
+    appreciationValue: 0,
+    contributionValue: 0,
+    icon: "repair",
+    participantIds: [],
+    suggestedMemberIds: ["demo-child"],
+    dueDate: "2026-07-22",
+    urgency: 1,
+    completedAt: null,
+  },
+  {
     id: "demo-dishes",
     householdId: "demo-household",
     templateId: "template-dishes",

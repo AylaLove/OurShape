@@ -1,9 +1,8 @@
 import { contributionBalance, type DailyQuest, type GameState, type HouseholdMember } from "@family-game/domain";
 import { HouseholdShape } from "@/features/geometry/HouseholdShape";
 import { QuestList } from "@/features/quests/QuestList";
-import { ChevronRight, ListTodo, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import type { HomeDinosaurState } from "@/features/companion/companion-state";
-import { featuredQuests, questPrompt } from "@/features/quests/quest-presentation";
 import type { HomeGoal } from "@/features/energy/home-goal";
 
 export function TodayView({
@@ -14,7 +13,6 @@ export function TodayView({
   homeGoal,
   onSelectQuest,
   onQuickAdd,
-  onOpenAllQuests,
 }: {
   state: GameState;
   activeMember: HouseholdMember;
@@ -23,20 +21,15 @@ export function TodayView({
   homeGoal: HomeGoal;
   onSelectQuest: (quest: DailyQuest) => void;
   onQuickAdd: () => void;
-  onOpenAllQuests: () => void;
 }) {
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const balances = contributionBalance(state, since);
   const outstanding = state.quests.filter((quest) => !["completed", "cancelled"].includes(quest.state));
-  const featured = featuredQuests(state.quests, activeMember.id);
   const message = activeMember.role === "child"
-    ? questPrompt(featured[0])
+    ? "We help, we notice, and our home grows stronger."
     : `${outstanding.length} household needs are open. Join one alone or do one together.`;
   const shape = (
-    <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={homeEnergy} homeGoal={homeGoal} childView={activeMember.role === "child"} onSelectQuest={(id) => {
-      const quest = state.quests.find((candidate) => candidate.id === id);
-      if (quest) onSelectQuest(quest);
-    }} />
+    <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={homeEnergy} homeGoal={homeGoal} childView={activeMember.role === "child"} />
   );
 
   if (activeMember.role === "child") {
@@ -44,12 +37,6 @@ export function TodayView({
       <section className="child-home-screen" aria-label="Home">
         <section className="welcome-strip welcome-strip--child" aria-label="Household encouragement"><Sparkles size={18} aria-hidden="true" /><p>{message}</p></section>
         {shape}
-        <button className="child-home-screen__all" type="button" onClick={onOpenAllQuests}>
-          <ListTodo size={21} aria-hidden="true" />
-          <span>All quests</span>
-          <b>{outstanding.length}</b>
-          <ChevronRight size={19} aria-hidden="true" />
-        </button>
       </section>
     );
   }

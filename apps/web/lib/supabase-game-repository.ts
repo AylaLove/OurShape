@@ -42,6 +42,16 @@ export class SupabaseGameRepository implements GameRepository {
     return requireSnapshot(data);
   }
 
+  async createRepairMission(householdId: string, targetMemberId: string, title: string, instruction: string): Promise<void> {
+    const { error } = await this.client.rpc("create_repair_mission", {
+      target_household: householdId,
+      target_member: targetMemberId,
+      mission_title: title,
+      mission_instruction: instruction,
+    });
+    requestError("Could not create the Repair Mission", error);
+  }
+
   async joinQuest(questId: string, memberId: string): Promise<void> {
     const { error } = await this.client.rpc("join_quest", {
       target_quest: questId,
@@ -92,4 +102,3 @@ export class SupabaseGameRepository implements GameRepository {
     requestError("Could not send the high five", error);
   }
 }
-

@@ -3,6 +3,7 @@
 import {
   endorseQuest,
   addQuickQuest,
+  addRepairMission,
   joinQuest,
   markQuestDone,
   pointBalance,
@@ -24,6 +25,7 @@ import { TodayView } from "./TodayView";
 import { isSupabaseConfigured } from "@/lib/supabase-browser";
 import { QuickAddSheet, type QuickQuest } from "./QuickAddSheet";
 import { AllQuestsView } from "./AllQuestsView";
+import { RepairMissionSheet, type RepairMissionInput } from "./RepairMissionSheet";
 import {
   deriveHomeDinosaurState,
   homeEnergy,
@@ -35,19 +37,27 @@ function now() {
   return new Date().toISOString();
 }
 
+const HYDRATION_SAFE_DAYTIME = new Date(2026, 0, 1, 12, 0, 0);
+
 export function GameShell() {
   const [state, setState] = useState(createDemoState);
   const [activeMemberId, setActiveMemberId] = useState("demo-ayla");
+  const [clientTime, setClientTime] = useState<Date | null>(null);
   const [section, setSection] = useState<AppScreen>("today");
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [repairAddOpen, setRepairAddOpen] = useState(false);
   const [companionMoment, setCompanionMoment] = useState<HomeDinosaurState | null>(null);
   const activeMember = state.household.members.find((member) => member.id === activeMemberId) ?? state.household.members[0];
   const selectedQuest = useMemo(() => state.quests.find((quest) => quest.id === selectedQuestId) ?? null, [selectedQuestId, state.quests]);
   const waitingCount = state.quests.filter((quest) => quest.state === "pending_endorsement" && !quest.participantIds.includes(activeMember.id)).length;
   const databaseReady = isSupabaseConfigured();
-  const dinosaurState = companionMoment ?? deriveHomeDinosaurState(state, activeMember.id);
+  const dinosaurState = companionMoment ?? deriveHomeDinosaurState(
+    state,
+    activeMember.id,
+    clientTime ?? HYDRATION_SAFE_DAYTIME,
+  );
   const energy = homeEnergy(state);
   const personalPoints = pointBalance(state, activeMember.id);
 
@@ -60,6 +70,10 @@ export function GameShell() {
     navigator.serviceWorker.getRegistrations()
       .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
       .catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    setClientTime(new Date());
   }, []);
 
   useEffect(() => {
@@ -122,8 +136,8 @@ export function GameShell() {
 
       {activeMember.role === "adult" ? <div className="demo-banner" role="status"><ShieldCheck size={15} /><span>Private playable demo</span><Cloud size={15} /><span>{databaseReady ? "Development database connected" : "Resettable demo data: not yet shared across phones"}</span></div> : null}
 
-      {section === "today" ? <TodayView state={state} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={energy} homeGoal={DEMO_HOME_GOAL} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onOpenAllQuests={() => setSection("quests")} /> : null}
-      {section === "quests" ? <AllQuestsView state={state} activeMember={activeMember} onBack={() => setSection("today")} onSelectQuest={selectQuest} /> : null}
+      {section === "today" ? <TodayView state={state} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={energy} homeGoal={DEMO_HOME_GOAL} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} /> : null}
+      {section === "quests" ? <AllQuestsView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onAddRepair={() => setRepairAddOpen(true)} /> : null}
       {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} onHighFive={(memberId) => apply(sendHighFive(state, activeMember.id, memberId, now()), false, "celebrating")} /> : null}
       {section === "rewards" ? <RewardsView state={state} activeMember={activeMember} onRedeem={(rewardId) => apply(redeemReward(state, rewardId, activeMember.id, now()))} /> : null}
       {section === "family" ? <FamilyView state={state} activeMember={activeMember} /> : null}
@@ -145,6 +159,10 @@ export function GameShell() {
       {quickAddOpen ? <QuickAddSheet onClose={() => setQuickAddOpen(false)} onAdd={(quest: QuickQuest) => {
         apply(addQuickQuest(state, quest, activeMember.id, now()));
         setQuickAddOpen(false);
+      }} /> : null}
+      {repairAddOpen ? <RepairMissionSheet members={state.household.members} onClose={() => setRepairAddOpen(false)} onAdd={(mission: RepairMissionInput) => {
+        apply(addRepairMission(state, mission, activeMember.id, now()));
+        setRepairAddOpen(false);
       }} /> : null}
       {toast ? <div className="toast" role="status">{toast}</div> : null}
     </main>

@@ -20,7 +20,19 @@ const childDevices = await readFile(
   new URL("../supabase/migrations/202607230003_child_device_access.sql", import.meta.url),
   "utf8",
 );
-const allSql = [core, actions, snapshot, invites, childDevices].join("\n");
+const repairSchema = await readFile(
+  new URL("../supabase/migrations/202607240001_repair_mission_schema.sql", import.meta.url),
+  "utf8",
+);
+const repairTarget = await readFile(
+  new URL("../supabase/migrations/202607240002_repair_mission_target.sql", import.meta.url),
+  "utf8",
+);
+const repairActions = await readFile(
+  new URL("../supabase/migrations/202607240003_repair_mission_actions.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions].join("\n");
 
 const requiredTables = [
   "households",
@@ -59,6 +71,7 @@ const requiredFunctions = [
   "create_child_device_code",
   "claim_child_device",
   "revoke_child_device",
+  "create_repair_mission",
 ];
 
 const failures = [];
@@ -128,6 +141,14 @@ if (!childDevices.includes("Adult accounts cannot become child devices")) {
 
 if (!childDevices.includes("access.revoked_at is null")) {
   failures.push("Revoked child devices retain access.");
+}
+
+if (!repairActions.includes("Finish the open Repair Mission before opening Treasure")) {
+  failures.push("Repair Missions do not lock reward redemption.");
+}
+
+if (!repairActions.includes("if quest_row.kind <> 'repair' then")) {
+  failures.push("Repair Mission completion can create appreciation or contribution credit.");
 }
 
 if (failures.length) {

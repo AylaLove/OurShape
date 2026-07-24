@@ -1,11 +1,12 @@
-import { pointBalance, type GameState, type HouseholdMember } from "@family-game/domain";
-import { Armchair, Gift, IceCreamBowl, MonitorPlay, PartyPopper, Utensils } from "lucide-react";
+import { hasOpenRepairMission, pointBalance, type GameState, type HouseholdMember } from "@family-game/domain";
+import { Armchair, Gift, HeartHandshake, IceCreamBowl, LockKeyhole, MonitorPlay, PartyPopper, Utensils } from "lucide-react";
 
 const REWARD_ICONS = { screen: MonitorPlay, treat: IceCreamBowl, choice: Utensils, quiet: Armchair, outing: PartyPopper };
 
 export function RewardsView({ state, activeMember, onRedeem }: { state: GameState; activeMember: HouseholdMember; onRedeem: (rewardId: string) => void }) {
   const balance = pointBalance(state, activeMember.id);
   const visible = state.rewards.filter((reward) => reward.audience === "all" || reward.audience === activeMember.role);
+  const repairLocked = hasOpenRepairMission(state, activeMember.id);
   return (
     <section className="view-section" aria-labelledby="rewards-title">
       <header className="view-heading">
@@ -13,11 +14,18 @@ export function RewardsView({ state, activeMember, onRedeem }: { state: GameStat
         <div><p className="eyebrow">REWARDS</p><h1 id="rewards-title">Choose something good</h1></div>
       </header>
       <div className="points-balance"><strong>{balance}</strong><span>{activeMember.pointLabel}</span></div>
+      {repairLocked ? (
+        <div className="repair-lock" role="status">
+          <span><HeartHandshake size={26} aria-hidden="true" /></span>
+          <div><strong>Treasure is waiting</strong><p>Your points are safe. Finish your Repair Mission and ask someone to acknowledge it.</p></div>
+          <LockKeyhole size={20} aria-hidden="true" />
+        </div>
+      ) : null}
       <p className="view-intro">Points celebrate participation. Person-provided rewards become requests, so everyone can freely say yes.</p>
       <div className="reward-grid">
         {visible.map((reward) => {
           const Icon = REWARD_ICONS[reward.icon];
-          const affordable = balance >= reward.cost;
+          const affordable = balance >= reward.cost && !repairLocked;
           return (
             <button className="reward" type="button" key={reward.id} onClick={() => onRedeem(reward.id)} disabled={!affordable}>
               <Icon size={28} strokeWidth={1.7} />

@@ -12,7 +12,7 @@ function awakeState(): GameState {
       quietHoursStart: "00:00",
       quietHoursEnd: "00:00",
     },
-    quests: DEMO_QUESTS.map((quest) => ({
+    quests: DEMO_QUESTS.filter((quest) => quest.kind !== "repair").map((quest) => ({
       ...quest,
       participantIds: [...quest.participantIds],
       suggestedMemberIds: [...quest.suggestedMemberIds],
@@ -31,6 +31,18 @@ function awakeState(): GameState {
 describe("Home Dinosaur state", () => {
   it("shows teamwork while the active member is in a shared active quest", () => {
     expect(deriveHomeDinosaurState(awakeState(), "demo-child")).toBe("teamwork");
+  });
+
+  it("gently points the affected person toward an open Repair Mission", () => {
+    const state = awakeState();
+    state.quests.push({
+      ...DEMO_QUESTS.find((quest) => quest.kind === "repair")!,
+      participantIds: [],
+      suggestedMemberIds: ["demo-child"],
+    });
+
+    expect(deriveHomeDinosaurState(state, "demo-child")).toBe("repairing");
+    expect(dinosaurMessage("repairing")).toContain("Something needs repairing");
   });
 
   it("carries energy for a person who can thank completed work", () => {

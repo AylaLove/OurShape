@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 
 const HOLD_MS = 750;
 
-export function HoldToFinishButton({ onFinish }: { onFinish: () => void }) {
+export function HoldToFinishButton({ onFinish, label = "Hold: it's done" }: { onFinish: () => void; label?: string }) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [holding, setHolding] = useState(false);
 
@@ -41,7 +41,7 @@ export function HoldToFinishButton({ onFinish }: { onFinish: () => void }) {
     >
       <span className="finish-button__fill" aria-hidden="true" />
       <Check size={21} aria-hidden="true" />
-      <span>Hold: it&apos;s done</span>
+      <span>{label}</span>
     </button>
   );
 }

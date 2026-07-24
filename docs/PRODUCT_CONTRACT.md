@@ -71,6 +71,25 @@ Suitable rewards include:
 
 Adult intimacy is never owed, purchased, scored, or shown to a child. A future private adult connection request must require active mutual consent, allow refusal without penalty, store no explicit details, and remain outside the reward ledger.
 
+## Repair Missions
+
+The game does not erase earned appreciation points as punishment. When something needs to
+be put right, an adult creates one specific Repair Mission for one household member.
+
+A Repair Mission:
+
+- names the action that restores trust or completes an agreement;
+- belongs to the named person and cannot be taken over by somebody else;
+- temporarily pauses that person's optional reward redemption;
+- preserves all previously earned points;
+- awards no appreciation points or contribution units;
+- requires acknowledgement from another household member;
+- records creation and completion in the household history.
+
+The child-facing language is calm and direct: something needs repairing, earned points are
+safe, and Treasure will reopen after the repair is acknowledged. The dinosaur may guide
+the child toward the repair, but may not appear hurt, hungry, frightened, or disappointed.
+
 ## Living household geometry
 
 The household is represented by a polygon:
@@ -84,6 +103,10 @@ The household is represented by a polygon:
 Each vertex represents a member. Edges hold shared work between people. The centre holds whole-household quests. High fives can travel along the edges.
 
 The shape responds to verified contribution units compared with agreed contribution targets over a rolling seven-day window. Targets account for age, ability, health, school, work, time, and custody. Adults may inspect detailed ratios. Children see only supportive household language and are never identified as the cause of imbalance.
+
+On the child phone, the polygon is a household-status surface rather than a task menu.
+Quest selection belongs to the dedicated `Quests` screen so task controls never obscure
+the family shape or companion.
 
 ## Home Dinosaur and Home Energy
 

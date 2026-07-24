@@ -1,14 +1,14 @@
 "use client";
 
 import type { DailyQuest, HouseholdMember } from "@family-game/domain";
-import { BookOpen, Flower2, Home, Shirt, Sparkles, Trees, Utensils, Volume2, X } from "lucide-react";
+import { BookOpen, Flower2, HeartHandshake, Home, Shirt, Sparkles, Trees, Utensils, Volume2, X } from "lucide-react";
 import type { CSSProperties } from "react";
 import { HoldToFinishButton } from "./HoldToFinishButton";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { dinosaurStateForQuest } from "@/features/companion/companion-state";
 import { useState } from "react";
 
-const ICONS = { dishes: Utensils, laundry: Shirt, book: BookOpen, plant: Flower2, home: Home, wood: Trees, sparkle: Sparkles };
+const ICONS = { dishes: Utensils, laundry: Shirt, book: BookOpen, plant: Flower2, home: Home, wood: Trees, sparkle: Sparkles, repair: HeartHandshake };
 
 export function QuestDetailSheet({
   quest,
@@ -34,6 +34,9 @@ export function QuestDetailSheet({
   const activeJoined = quest.participantIds.includes(activeMember.id);
   const canThank = quest.state === "pending_endorsement" && !activeJoined;
   const childView = activeMember.role === "child";
+  const repair = quest.kind === "repair";
+  const repairTargetedToActiveMember = !repair || quest.suggestedMemberIds.includes(activeMember.id);
+  const repairTarget = members.find((member) => quest.suggestedMemberIds.includes(member.id));
   const [thanksNote, setThanksNote] = useState<string | null>(null);
   const phase = questPhase(quest, activeJoined, canThank);
 
@@ -89,13 +92,16 @@ export function QuestDetailSheet({
         </div>
 
         <div className="quest-sheet__actions">
-          {(["needed", "active"].includes(quest.state) && !activeJoined) ? (
+          {(["needed", "active"].includes(quest.state) && !activeJoined && repairTargetedToActiveMember) ? (
             <button className="primary-button" type="button" onClick={() => {
               tap(22);
               onJoin();
-            }}>{childView ? "I'll help!" : "Join this quest"}</button>
+            }}>{repair ? "I'll make it right" : childView ? "I'll help!" : "Join this quest"}</button>
           ) : null}
-          {(["needed", "active"].includes(quest.state) && activeJoined) ? <HoldToFinishButton onFinish={() => {
+          {repair && ["needed", "active"].includes(quest.state) && !activeJoined && !repairTargetedToActiveMember ? (
+            <p className="waiting-message"><HeartHandshake size={20} /> This Repair Mission belongs to {repairTarget?.displayName ?? "another family member"}.</p>
+          ) : null}
+          {(["needed", "active"].includes(quest.state) && activeJoined) ? <HoldToFinishButton label={repair ? "Hold: I made it right" : undefined} onFinish={() => {
             tap([30, 35, 50]);
             onFinish();
           }} /> : null}
@@ -118,10 +124,14 @@ export function QuestDetailSheet({
               <button className="text-button" type="button" onClick={onNeedsMore}>Needs one small finishing touch</button>
             </>
           ) : null}
-          {quest.state === "completed" ? <p className="complete-message"><CheckMark /> Complete and appreciated.</p> : null}
+          {quest.state === "completed" ? <p className="complete-message"><CheckMark /> {repair ? "Repair accepted. Trust restored." : "Complete and appreciated."}</p> : null}
         </div>
         <footer className="quest-sheet__reward">
-          {childView ? <><strong>+{quest.appreciationValue}</strong> {activeMember.pointLabel} after someone sends thanks</> : <>Everyone who helps earns <strong>+{quest.appreciationValue}</strong> appreciation.</>}
+          {repair
+            ? "Your earned points stay safe. Another person confirms when the repair feels complete."
+            : childView
+              ? <><strong>+{quest.appreciationValue}</strong> {activeMember.pointLabel} after someone sends thanks</>
+              : <>Everyone who helps earns <strong>+{quest.appreciationValue}</strong> appreciation.</>}
         </footer>
       </section>
     </div>
@@ -129,6 +139,11 @@ export function QuestDetailSheet({
 }
 
 function questPhase(quest: DailyQuest, activeJoined: boolean, canThank: boolean) {
+  if (quest.kind === "repair" && quest.state === "completed") return "Trust restored";
+  if (quest.kind === "repair" && canThank) return "Is the repair complete?";
+  if (quest.kind === "repair" && quest.state === "pending_endorsement") return "Waiting for someone to check";
+  if (quest.kind === "repair" && activeJoined) return "Making it right";
+  if (quest.kind === "repair") return "Something needs repairing";
   if (quest.state === "completed") return "The home remembers";
   if (canThank) return "They helped the home";
   if (quest.state === "pending_endorsement") return "Waiting for thanks";

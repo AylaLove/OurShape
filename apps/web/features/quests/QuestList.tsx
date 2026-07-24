@@ -5,6 +5,7 @@ import {
   CircleEllipsis,
   Flower2,
   Heart,
+  HeartHandshake,
   Home,
   PartyPopper,
   Play,
@@ -15,9 +16,9 @@ import {
 } from "lucide-react";
 import type { CSSProperties } from "react";
 
-const QUEST_ICONS = { dishes: Utensils, laundry: Shirt, book: BookOpen, plant: Flower2, home: Home, wood: Trees, sparkle: Sparkles };
+const QUEST_ICONS = { dishes: Utensils, laundry: Shirt, book: BookOpen, plant: Flower2, home: Home, wood: Trees, sparkle: Sparkles, repair: HeartHandshake };
 const KIND_LABELS: Record<DailyQuest["kind"], string> = {
-  personal: "Personal", open: "Anyone", duo: "Together", family: "Whole home", care: "Care", surprise_help: "Kindness", big: "Big quest", rescue: "Needs help",
+  personal: "Personal", open: "Anyone", duo: "Together", family: "Whole home", care: "Care", surprise_help: "Kindness", big: "Big quest", rescue: "Needs help", repair: "Make it right",
 };
 
 function stateLabel(state: DailyQuest["state"]) {
@@ -28,34 +29,43 @@ function stateLabel(state: DailyQuest["state"]) {
 }
 
 export function QuestList({ quests, members, onSelect, onQuickAdd }: { quests: DailyQuest[]; members: HouseholdMember[]; onSelect: (questId: string) => void; onQuickAdd?: () => void }) {
+  const repairQuests = quests.filter((quest) => quest.kind === "repair" && quest.state !== "completed");
+  const regularQuests = quests.filter((quest) => quest.kind !== "repair");
   const groups = [
+    ...(repairQuests.length ? [{
+      id: "repair",
+      title: "Make it right",
+      hint: "Repair first",
+      Icon: HeartHandshake,
+      quests: repairQuests,
+    }] : []),
     {
       id: "needed",
       title: "Needs us",
       hint: "Pick one",
       Icon: Sparkles,
-      quests: quests.filter((quest) => ["needed", "carried", "rescheduled"].includes(quest.state)),
+      quests: regularQuests.filter((quest) => ["needed", "carried", "rescheduled"].includes(quest.state)),
     },
     {
       id: "active",
       title: "Doing",
       hint: "We joined",
       Icon: Play,
-      quests: quests.filter((quest) => quest.state === "active"),
+      quests: regularQuests.filter((quest) => quest.state === "active"),
     },
     {
       id: "waiting",
       title: "Waiting for thanks",
       hint: "Someone must notice",
       Icon: Heart,
-      quests: quests.filter((quest) => quest.state === "pending_endorsement"),
+      quests: regularQuests.filter((quest) => quest.state === "pending_endorsement"),
     },
     {
       id: "completed",
       title: "Celebrated",
       hint: "Home Energy earned",
       Icon: PartyPopper,
-      quests: quests.filter((quest) => quest.state === "completed"),
+      quests: regularQuests.filter((quest) => quest.state === "completed"),
     },
   ] as const;
 
@@ -99,10 +109,10 @@ function QuestCard({ quest, members, onSelect }: { quest: DailyQuest; members: H
   const waiting = quest.state === "pending_endorsement";
 
   return (
-    <button className={`quest quest--${quest.state} quest--urgency-${quest.urgency}`} type="button" onClick={() => onSelect(quest.id)}>
+    <button className={`quest quest--${quest.state} quest--${quest.kind} quest--urgency-${quest.urgency}`} type="button" onClick={() => onSelect(quest.id)}>
       <span className="quest__icon" aria-hidden="true"><Icon size={24} strokeWidth={1.8} /></span>
       <span className="quest__content">
-        <span className="quest__title-row"><strong>{quest.title}</strong><span className="points">+{quest.appreciationValue}</span></span>
+        <span className="quest__title-row"><strong>{quest.title}</strong>{quest.kind === "repair" ? <span className="repair-label">Repair</span> : <span className="points">+{quest.appreciationValue}</span>}</span>
         <span className="quest__meta">
           <span>{KIND_LABELS[quest.kind]}</span><span aria-hidden="true">·</span>
           <span className={waiting ? "quest__state quest__state--waiting" : "quest__state"}>{waiting ? <Check size={14} /> : <CircleEllipsis size={14} />}{stateLabel(quest.state)}</span>

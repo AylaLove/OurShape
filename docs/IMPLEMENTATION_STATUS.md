@@ -15,18 +15,17 @@ The child profile uses simpler language, spoken quest instructions, large contro
 
 The child Home now uses the living household shape as the primary game surface:
 
-- one current quest is visually prominent;
-- two additional choices remain visible;
-- the complete task board lives on a separate `All quests` screen;
-- personal, duo, family, and open quests use meaningful geometric placement;
+- the triangle, household members, Home Energy, and dinosaur communicate household state;
+- chores no longer float over or obscure the family shape;
+- all task selection lives on the separate `Quests` screen;
 - demo and management information are removed from the ordinary child screen;
-- child navigation is reduced to `Home`, `Thanks`, and `Treasure`.
+- child navigation is `Home`, `Quests`, `Thanks`, and `Treasure`.
 
 The child experience is now divided into distinct app screens instead of one continuous
 page:
 
 - `Home` is a fixed, non-scrolling household scene;
-- `All quests` is the deliberate scrolling list;
+- `Quests` is the deliberate scrolling list;
 - opening a quest replaces the screen with one focused, full-height action scene;
 - `Thanks` and `Treasure` remain separate destinations in the bottom navigation.
 
@@ -38,6 +37,16 @@ The child quest itself is now a focused action scene:
 - one obvious action at a time;
 - pending work becomes a visible energy object;
 - Watch Points are clearly delayed until another person sends thanks.
+
+Repair Missions now provide a bounded consequence loop:
+
+- an adult chooses the person, mission, and exact repair instruction;
+- the targeted person is the only person who can complete that repair;
+- earned appreciation points remain intact;
+- Treasure waits while that person's Repair Mission is open;
+- the repair awards no new points or contribution credit;
+- another household member must acknowledge the repair before Treasure reopens;
+- creation and completion remain visible in household history.
 
 The dinosaur and habitat now reflect the real quest state:
 
@@ -76,6 +85,7 @@ Home Energy now has a concrete shared purpose:
 - A Supabase repository adapter that reads one profile-safe household snapshot.
 - One-use expiring invitations for adding the second adult account.
 - Revocable child-device access claimed through a short-lived parent code.
+- Repair Missions with target enforcement, reward locking, non-credit completion, acknowledgement, and audit history.
 
 ## What still needs external setup
 
@@ -96,8 +106,8 @@ in the adult interface and marked as a demo on the child screen; the app does no
 that browser-only demo state is a database.
 
 Mobile QA currently covers fixed 375 x 667 and 414 x 896 frames. The child Home has no
-horizontal overflow, does not require page scrolling, and keeps quest controls separate
-from the dinosaur at both sizes.
+horizontal overflow, does not require page scrolling, and no longer places task controls
+over the dinosaur or household shape at either size.
 
 ## Recommended next checkpoint
 

@@ -2,6 +2,7 @@ import type { GameState, QuestEndorsement } from "@family-game/domain";
 
 export interface GameRepository {
   loadHouseholdSnapshot(householdId: string, activeMemberId: string): Promise<GameState>;
+  createRepairMission(householdId: string, targetMemberId: string, title: string, instruction: string): Promise<void>;
   joinQuest(questId: string, memberId: string, idempotencyKey: string): Promise<void>;
   completeQuest(questId: string, memberId: string, idempotencyKey: string): Promise<void>;
   endorseCompletion(

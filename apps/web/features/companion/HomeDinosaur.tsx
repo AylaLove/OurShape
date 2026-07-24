@@ -46,6 +46,10 @@ const POSES: Record<HomeDinosaurState, { file: string; alt: string }> = {
     file: "/companion/home-dinosaur-gratitude-closeup-v1.png",
     alt: "The Home Dinosaur giving a warm thank you",
   },
+  repairing: {
+    file: "/companion/home-dinosaur-curious-v1.png",
+    alt: "The Home Dinosaur gently noticing that something needs repairing",
+  },
 };
 
 export function HomeDinosaur({

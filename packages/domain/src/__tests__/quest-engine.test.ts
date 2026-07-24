@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  addRepairMission,
   endorseQuest,
+  hasOpenRepairMission,
   joinQuest,
   markQuestDone,
   pointBalance,
@@ -152,5 +154,109 @@ describe("reward payments", () => {
     expect(result.ok).toBe(false);
     expect(pointBalance(result.state, "child")).toBe(0);
     expect(result.state.redemptions).toHaveLength(0);
+  });
+
+  it("protects earned points while a Repair Mission temporarily locks rewards", () => {
+    let state = fixture();
+    state.pointLedger.push({
+      id: "points-earned",
+      householdId: state.household.id,
+      memberId: "child",
+      questId: "quest-one",
+      amount: 5,
+      reason: "quest_endorsed",
+      idempotencyKey: "earned:child",
+      createdAt: "2026-07-22T08:00:00Z",
+    });
+    state.rewards.push({
+      id: "reward-watch",
+      householdId: state.household.id,
+      title: "Watch time",
+      icon: "screen",
+      cost: 3,
+      audience: "child",
+      requiresConsent: true,
+    });
+    state = addRepairMission(
+      state,
+      {
+        targetMemberId: "child",
+        title: "Put the game pieces back",
+        instruction: "Return every piece, then ask someone to check.",
+      },
+      "adult-a",
+      "2026-07-22T09:00:00Z",
+    ).state;
+
+    const result = redeemReward(state, "reward-watch", "child", "2026-07-22T09:01:00Z");
+
+    expect(result.ok).toBe(false);
+    expect(hasOpenRepairMission(result.state, "child")).toBe(true);
+    expect(pointBalance(result.state, "child")).toBe(5);
+    expect(result.state.redemptions).toHaveLength(0);
+  });
+
+  it("does not let another household member take over somebody's Repair Mission", () => {
+    let state = fixture();
+    state = addRepairMission(
+      state,
+      {
+        targetMemberId: "child",
+        title: "Put the game pieces back",
+        instruction: "Return every piece, then ask someone to check.",
+      },
+      "adult-a",
+      "2026-07-22T09:00:00Z",
+    ).state;
+    const repairId = state.quests.at(-1)!.id;
+
+    expect(joinQuest(state, repairId, "adult-b", "2026-07-22T09:01:00Z").ok).toBe(false);
+    expect(joinQuest(state, repairId, "child", "2026-07-22T09:01:00Z").ok).toBe(true);
+  });
+
+  it("unlocks rewards after another family member accepts the repair without awarding points", () => {
+    let state = fixture();
+    state.pointLedger.push({
+      id: "points-earned",
+      householdId: state.household.id,
+      memberId: "child",
+      questId: "quest-one",
+      amount: 5,
+      reason: "quest_endorsed",
+      idempotencyKey: "earned:child",
+      createdAt: "2026-07-22T08:00:00Z",
+    });
+    state.rewards.push({
+      id: "reward-watch",
+      householdId: state.household.id,
+      title: "Watch time",
+      icon: "screen",
+      cost: 3,
+      audience: "child",
+      requiresConsent: true,
+    });
+    state = addRepairMission(
+      state,
+      {
+        targetMemberId: "child",
+        title: "Put the game pieces back",
+        instruction: "Return every piece, then ask someone to check.",
+      },
+      "adult-a",
+      "2026-07-22T09:00:00Z",
+    ).state;
+    const repairId = state.quests.at(-1)!.id;
+    state = joinQuest(state, repairId, "child", "2026-07-22T09:01:00Z").state;
+    state = markQuestDone(state, repairId, "child", "2026-07-22T09:02:00Z").state;
+    state = endorseQuest(state, repairId, "adult-b", "thanked", "2026-07-22T09:03:00Z").state;
+
+    expect(hasOpenRepairMission(state, "child")).toBe(false);
+    expect(pointBalance(state, "child")).toBe(5);
+    expect(state.contributionLedger).toHaveLength(0);
+    expect(state.history[0].type).toBe("repair_completed");
+
+    const redemption = redeemReward(state, "reward-watch", "child", "2026-07-22T09:04:00Z");
+    expect(redemption.ok).toBe(true);
+    expect(pointBalance(redemption.state, "child")).toBe(2);
   });
 });

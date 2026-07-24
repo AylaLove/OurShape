@@ -52,11 +52,78 @@ export function addQuickQuest(state: GameState, quest: Omit<DailyQuest, "id" | "
   return { state: next, ok: true, message: `${created.title} joined today’s shape.` };
 }
 
+export function addRepairMission(
+  state: GameState,
+  {
+    targetMemberId,
+    title,
+    instruction,
+    spokenInstruction = instruction,
+  }: {
+    targetMemberId: string;
+    title: string;
+    instruction: string;
+    spokenInstruction?: string;
+  },
+  actorId: string,
+  now: string,
+): DomainResult {
+  const actor = state.household.members.find((member) => member.id === actorId);
+  const target = state.household.members.find((member) => member.id === targetMemberId);
+  if (!actor || actor.role !== "adult") return failure(state, "An adult must set a Repair Mission.");
+  if (!target || target.householdId !== actor.householdId) return failure(state, "Choose someone in this household.");
+  if (!title.trim() || !instruction.trim()) return failure(state, "Say what needs repairing and how to make it right.");
+  if (hasOpenRepairMission(state, targetMemberId)) return failure(state, `${target.displayName} already has an open Repair Mission.`);
+
+  const date = now.slice(0, 10);
+  const mission: DailyQuest = {
+    id: id("repair", [targetMemberId, date, String(state.quests.length + 1)]),
+    householdId: state.household.id,
+    templateId: null,
+    title: title.trim().slice(0, 80),
+    instruction: instruction.trim().slice(0, 240),
+    spokenInstruction: spokenInstruction.trim().slice(0, 240),
+    kind: "repair",
+    state: "needed",
+    effort: "light",
+    appreciationValue: 0,
+    contributionValue: 0,
+    icon: "repair",
+    participantIds: [],
+    suggestedMemberIds: [targetMemberId],
+    dueDate: date,
+    urgency: 1,
+    completedAt: null,
+  };
+  const next = appendHistory({ ...state, quests: [...state.quests, mission] }, {
+    id: id("history-repair-created", [mission.id]),
+    householdId: state.household.id,
+    type: "repair_created",
+    actorId,
+    questId: mission.id,
+    message: `${actor.displayName} opened a Repair Mission with ${target.displayName}: ${mission.title}.`,
+    createdAt: now,
+  });
+  return { state: next, ok: true, message: `Repair Mission ready for ${target.displayName}.` };
+}
+
+export function hasOpenRepairMission(state: GameState, memberId: string): boolean {
+  return state.quests.some(
+    (quest) =>
+      quest.kind === "repair"
+      && !["completed", "cancelled"].includes(quest.state)
+      && (quest.suggestedMemberIds.includes(memberId) || quest.participantIds.includes(memberId)),
+  );
+}
+
 export function joinQuest(state: GameState, questId: string, memberId: string, now: string): DomainResult {
   const quest = state.quests.find((candidate) => candidate.id === questId);
   const member = state.household.members.find((candidate) => candidate.id === memberId);
   if (!quest || !member || quest.householdId !== member.householdId) return failure(state, "That quest is not available here.");
   if (!["needed", "active"].includes(quest.state)) return failure(state, "This quest is no longer open to join.");
+  if (quest.kind === "repair" && !quest.suggestedMemberIds.includes(memberId)) {
+    return failure(state, "This Repair Mission belongs to another family member.");
+  }
   if (quest.participantIds.includes(memberId)) return failure(state, `${member.displayName} already joined.`);
 
   const nextQuest = { ...quest, state: "active" as const, participantIds: [...quest.participantIds, memberId] };
@@ -76,6 +143,9 @@ export function markQuestDone(state: GameState, questId: string, memberId: strin
   const quest = state.quests.find((candidate) => candidate.id === questId);
   if (!quest) return failure(state, "That quest could not be found.");
   if (!["needed", "active"].includes(quest.state)) return failure(state, "This quest cannot be marked done now.");
+  if (quest.kind === "repair" && !quest.suggestedMemberIds.includes(memberId)) {
+    return failure(state, "Only the person named in this Repair Mission can complete it.");
+  }
 
   const participantIds = quest.participantIds.length ? quest.participantIds : [memberId];
   if (!participantIds.includes(memberId)) return failure(state, "Join this quest before marking it done.");
@@ -175,21 +245,29 @@ export function endorseQuest(
   let next: GameState = {
     ...replaceQuest(state, { ...quest, state: "completed", completedAt: now }),
     endorsements: [...state.endorsements, endorsement],
-    pointLedger: [...state.pointLedger, ...pointEntries],
-    contributionLedger: [...state.contributionLedger, ...contributionEntries],
+    pointLedger: quest.kind === "repair" ? state.pointLedger : [...state.pointLedger, ...pointEntries],
+    contributionLedger: quest.kind === "repair" ? state.contributionLedger : [...state.contributionLedger, ...contributionEntries],
   };
   next = appendHistory(next, {
     id: id("history-thanks", [completion.id]),
     householdId: quest.householdId,
-    type: "thanked",
+    type: quest.kind === "repair" ? "repair_completed" : "thanked",
     actorId: endorserId,
     questId,
-    message: note?.trim()
-      ? `${endorser.displayName} thanked ${quest.title}: “${note.trim().slice(0, 120)}”`
-      : `${endorser.displayName} sent thanks for ${quest.title}.`,
+    message: quest.kind === "repair"
+      ? `${endorser.displayName} accepted the repair. Trust was restored.`
+      : note?.trim()
+        ? `${endorser.displayName} thanked ${quest.title}: “${note.trim().slice(0, 120)}”`
+        : `${endorser.displayName} sent thanks for ${quest.title}.`,
     createdAt: now,
   });
-  return { state: next, ok: true, message: "Thanks sent. Everyone who helped earned the full reward." };
+  return {
+    state: next,
+    ok: true,
+    message: quest.kind === "repair"
+      ? "Repair accepted. Trust restored and Treasure unlocked."
+      : "Thanks sent. Everyone who helped earned the full reward.",
+  };
 }
 
 export function pointBalance(state: GameState, memberId: string): number {
@@ -201,6 +279,7 @@ export function redeemReward(state: GameState, rewardId: string, memberId: strin
   const member = state.household.members.find((candidate) => candidate.id === memberId);
   if (!reward || !member) return failure(state, "That reward is not available.");
   if (reward.audience !== "all" && reward.audience !== member.role) return failure(state, "That reward belongs to another profile.");
+  if (hasOpenRepairMission(state, memberId)) return failure(state, "Finish your Repair Mission and have it acknowledged before opening Treasure.");
   if (pointBalance(state, memberId) < reward.cost) return failure(state, `You need ${reward.cost - pointBalance(state, memberId)} more points.`);
 
   const redemption: RewardRedemption = {

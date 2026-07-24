@@ -19,3 +19,5 @@
 | D-015 | Load shared state through one profile-safe household snapshot | One coherent response is easier to validate and less likely to expose adult-only data than many unrelated browser queries | Accepted |
 | D-016 | Add adults with expiring one-use invitations | A real three-phone household needs a safe joining path without exposing database administration to the family | Accepted |
 | D-017 | Give the child phone a revocable limited session | Leaving a parent account open on the child’s device would expose adult controls and private rewards; the child device should only act as its claimed child profile | Accepted |
+| D-018 | Keep Home for household state and Quests for choosing work | The family shape and companion should communicate how the home is doing; placing task controls over them made both ideas harder to understand | Accepted |
+| D-019 | Use Repair Missions instead of removing earned points | Consequences should teach repair and restored trust. Earned points remain intact, while optional rewards wait until a specific repair is completed and acknowledged by another member | Accepted |
