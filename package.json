@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "pnpm --filter @family-game/web dev",
     "build": "pnpm --filter @family-game/web build",
+    "build:sites": "node scripts/build-sites.mjs",
     "typecheck": "pnpm --filter @family-game/web typecheck",
     "test": "vitest run",
     "schema-check": "node scripts/schema-contract-check.mjs",

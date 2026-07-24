@@ -1,26 +1,64 @@
-# Next Batch: Real Household Connection
+# Next Batch: Real Household Persistence
 
 ## Objective
 
-Connect the now-playable household loop to a dedicated Supabase development project and prove it across the three phones.
+Move the tested game loop from resettable demo memory into one private household that works
+across three phones:
+
+`Sage helps -> adult sees it -> adult sends thanks -> every phone sees the same result`
+
+The child-first Home, quest action scene, dinosaur state, Home Energy, endorsement rules,
+points, rewards, and adult detail views are already sufficient for this proof. Do not add
+another game system before the household truth is persistent.
 
 ## Work
 
-1. Create a development Supabase project and apply the existing migrations.
-2. Add adult sign-in and use `create_household_with_owner` for first-time setup.
-3. Add the second adult and parent-managed child profile.
-4. Implement the Supabase `GameRepository` adapter and realtime refresh.
-5. Review the Flatastic import sheet, then seed only approved templates.
-6. Add offline action queue status without using browser storage as truth.
-7. Prove two households cannot read or change each other's data.
-8. Deploy a private preview and test it on all three phones.
+1. Connect one development Supabase project using protected environment variables.
+2. Run the prepared Postgres migrations and verify row-level security.
+3. Replace the in-memory demo repository at the app boundary with
+   `SupabaseGameRepository`.
+4. Create one household, two adult accounts, and one parent-managed child profile.
+5. Claim one child device through the existing short-lived parent code.
+6. Subscribe each phone to household changes or refresh the shared snapshot safely.
+7. Prove the complete join-to-thanks loop across separate devices.
+8. Verify refresh, weak connection, simultaneous actions, duplicate endorsement, and reward
+   spending.
+9. Add a clear offline/error state; never silently pretend an unsaved action succeeded.
+10. Prepare a private preview URL for the household beta.
 
-## Stop conditions
+## Preserve
 
-Do not call this a household beta until:
+- Another-person endorsement before points or Home Energy.
+- Immutable point and contribution ledgers.
+- Full appreciation points for every participant in a shared quest.
+- Child-safe screens without adult balance or private rewards.
+- Household scoping on every owned record.
+- The repository boundary; UI components must not call Supabase directly.
+- The current visual experience unless a real phone test reveals a usability problem.
 
-- identity survives refresh;
-- the active household is unambiguous;
-- child and adult responses expose different fields;
-- cross-household isolation tests pass;
-- no private state depends on local storage.
+## External Inputs Needed
+
+- A Supabase development project.
+- Its public project URL and publishable/anonymous key in local environment settings.
+- A private preview host for phone access.
+
+Never paste service-role keys, database passwords, or other secrets into chat, source files,
+screenshots, or Git.
+
+## Acceptance
+
+The batch is complete only when:
+
+- Sage joins and finishes a quest on the child phone;
+- a non-participating adult sees the pending effort on another phone;
+- the adult sends thanks once;
+- all three phones show the same completed quest, Home Energy, points, and history;
+- reloading any phone keeps the result;
+- repeating the endorsement cannot award points twice;
+- a second household cannot read or infer the first household's data.
+
+## Cost Boundary
+
+No image generation is needed. The work is medium-high engineering effort because
+authentication, database policy, and multi-device testing must be exact. It should be
+completed before discoveries, customization, streaks, notifications, or friend households.

@@ -10,6 +10,18 @@ const POSES: Record<HomeDinosaurState, { file: string; alt: string }> = {
     file: "/companion/home-dinosaur-curious-v1.png",
     alt: "The Home Dinosaur looking curiously at what needs doing",
   },
+  inviting: {
+    file: "/companion/home-dinosaur-curious-v1.png",
+    alt: "The Home Dinosaur inviting someone to help",
+  },
+  ready: {
+    file: "/companion/home-dinosaur-encouraging-v1.png",
+    alt: "The Home Dinosaur ready to begin a household quest",
+  },
+  teamwork: {
+    file: "/companion/home-dinosaur-celebrating-v1.png",
+    alt: "The Home Dinosaur celebrating that people joined together",
+  },
   encouraging: {
     file: "/companion/home-dinosaur-encouraging-v1.png",
     alt: "The Home Dinosaur cheering someone on",

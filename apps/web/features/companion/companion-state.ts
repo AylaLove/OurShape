@@ -3,6 +3,9 @@ import type { DailyQuest, GameState } from "@family-game/domain";
 export type HomeDinosaurState =
   | "resting"
   | "curious"
+  | "inviting"
+  | "ready"
+  | "teamwork"
   | "encouraging"
   | "celebrating"
   | "carrying-energy"
@@ -36,8 +39,9 @@ export function isQuietHours(state: GameState, date = new Date()): boolean {
 export function deriveHomeDinosaurState(
   state: GameState,
   activeMemberId: string,
+  date = new Date(),
 ): HomeDinosaurState {
-  if (isQuietHours(state)) return "sleeping";
+  if (isQuietHours(state, date)) return "sleeping";
 
   const canThank = state.quests.some(
     (quest) =>
@@ -47,7 +51,9 @@ export function deriveHomeDinosaurState(
   if (canThank) return "carrying-energy";
 
   const active = state.quests.filter((quest) => quest.state === "active");
-  if (active.some((quest) => quest.participantIds.length > 1)) return "celebrating";
+  const joinedActive = active.find((quest) => quest.participantIds.includes(activeMemberId));
+  if (joinedActive?.participantIds.length && joinedActive.participantIds.length > 1) return "teamwork";
+  if (joinedActive) return "ready";
   if (active.length) return "encouraging";
 
   const urgent = state.quests.some(
@@ -55,13 +61,48 @@ export function deriveHomeDinosaurState(
       !["completed", "cancelled"].includes(quest.state)
       && quest.urgency === 2,
   );
-  return urgent ? "curious" : "resting";
+  const openNeed = state.quests.some(
+    (quest) => ["needed", "carried", "rescheduled"].includes(quest.state),
+  );
+  if (urgent) return "curious";
+  return openNeed ? "inviting" : "resting";
 }
 
 export function dinosaurStateForQuest(quest: DailyQuest): HomeDinosaurState {
   if (quest.state === "pending_endorsement") return "carrying-energy";
   if (quest.state === "completed") return "gratitude";
-  if (quest.state === "active") return quest.participantIds.length > 1 ? "celebrating" : "encouraging";
-  return "curious";
+  if (quest.state === "active") return quest.participantIds.length > 1 ? "teamwork" : "ready";
+  return "inviting";
 }
 
+export function dinosaurMessage(
+  state: HomeDinosaurState,
+  pendingEnergy = 0,
+): string {
+  switch (state) {
+    case "sleeping":
+      return "Quiet time now. Our quests will still be here tomorrow.";
+    case "carrying-energy":
+      return pendingEnergy === 1
+        ? "One finished quest is waiting for thanks. Then its energy comes home."
+        : `${pendingEnergy} finished quests are waiting for thanks. Then their energy comes home.`;
+    case "sharing-energy":
+      return "Thanks turned that help into Home Energy.";
+    case "gratitude":
+      return "Your help was seen. Thank you.";
+    case "celebrating":
+      return "Our home is glowing because people helped.";
+    case "teamwork":
+      return "Working together makes our home glow.";
+    case "ready":
+      return "You joined in. Mark the quest done when the job is truly finished.";
+    case "encouraging":
+      return "Someone is already helping. You can join them or choose another quest.";
+    case "curious":
+      return "Something needs help soon. Choose one small quest.";
+    case "inviting":
+      return "Choose one quest. Even a small help gives our home energy.";
+    case "resting":
+      return "Everything is settled. We can enjoy our home.";
+  }
+}

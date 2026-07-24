@@ -98,6 +98,18 @@ h3 {
   --canvas: #0c1512;
 }
 
+.app-shell--home-screen {
+  display: flex;
+  height: 100dvh;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-shell--home-screen > .topbar {
+  flex: 0 0 auto;
+}
+
 .topbar,
 .topbar__actions,
 .section-heading,
@@ -115,6 +127,15 @@ h3 {
 
 .topbar__actions {
   gap: 7px;
+}
+
+.topbar--child {
+  min-height: 52px;
+  margin-bottom: 6px;
+}
+
+.topbar--child h1 {
+  font-size: 22px;
 }
 
 .eyebrow {
@@ -199,6 +220,44 @@ h3 {
   font-weight: 700;
 }
 
+.profile-switcher--compact {
+  position: relative;
+  width: 42px;
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.profile-switcher__points {
+  position: absolute;
+  z-index: 2;
+  right: -7px;
+  bottom: -5px;
+  display: grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  padding: 0 5px;
+  border: 2px solid var(--canvas);
+  border-radius: 999px;
+  background: var(--sun);
+  color: #251906;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.profile-switcher--compact select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.profile-switcher--compact svg {
+  display: none;
+}
+
 .demo-banner {
   display: flex;
   flex-wrap: wrap;
@@ -245,6 +304,10 @@ h3 {
 
 .app-nav__item--active {
   color: var(--forest);
+}
+
+.app-nav--child {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .primary-button,
@@ -322,9 +385,16 @@ h3 {
 }
 
 .home-dinosaur--encouraging,
+.home-dinosaur--ready,
+.home-dinosaur--teamwork,
 .home-dinosaur--celebrating,
 .home-dinosaur--sharing-energy {
   animation: dinosaur-lift 1.8s ease-in-out infinite;
+}
+
+.home-dinosaur--inviting,
+.home-dinosaur--curious {
+  animation: dinosaur-listen 2.8s ease-in-out infinite;
 }
 
 .home-dinosaur--carrying-energy img,
@@ -335,6 +405,12 @@ h3 {
 @keyframes dinosaur-lift {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
+}
+
+@keyframes dinosaur-listen {
+  0%, 100% { transform: rotate(0); }
+  45% { transform: rotate(-1.5deg); }
+  60% { transform: rotate(1deg); }
 }
 
 @media (min-width: 760px) {
@@ -374,8 +450,12 @@ h3 {
 
 @media (prefers-reduced-motion: reduce) {
   .home-dinosaur--encouraging,
+  .home-dinosaur--ready,
+  .home-dinosaur--teamwork,
   .home-dinosaur--celebrating,
-  .home-dinosaur--sharing-energy {
+  .home-dinosaur--sharing-energy,
+  .home-dinosaur--inviting,
+  .home-dinosaur--curious {
     animation: none;
   }
 }

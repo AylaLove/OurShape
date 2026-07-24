@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-static";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Family Participation Game",
@@ -7,10 +9,12 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "A shared daily household participation game.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f5f7f4",
+    background_color: "#0c1512",
     theme_color: "#183c33",
     orientation: "portrait",
     icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "maskable" },
     ],
   };
