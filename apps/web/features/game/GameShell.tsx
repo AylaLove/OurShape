@@ -32,6 +32,7 @@ import {
   type HomeDinosaurState,
 } from "@/features/companion/companion-state";
 import { DEMO_HOME_GOAL } from "@/features/energy/home-goal";
+import { GratitudeMoment, type GratitudeMomentData } from "@/features/gratitude/GratitudeMoment";
 
 function now() {
   return new Date().toISOString();
@@ -49,6 +50,7 @@ export function GameShell() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [repairAddOpen, setRepairAddOpen] = useState(false);
   const [companionMoment, setCompanionMoment] = useState<HomeDinosaurState | null>(null);
+  const [gratitudeMoment, setGratitudeMoment] = useState<GratitudeMomentData | null>(null);
   const activeMember = state.household.members.find((member) => member.id === activeMemberId) ?? state.household.members[0];
   const selectedQuest = useMemo(() => state.quests.find((quest) => quest.id === selectedQuestId) ?? null, [selectedQuestId, state.quests]);
   const waitingCount = state.quests.filter((quest) => quest.state === "pending_endorsement" && !quest.participantIds.includes(activeMember.id)).length;
@@ -110,6 +112,23 @@ export function GameShell() {
     setSelectedQuestId(quest.id);
   }
 
+  function thankSelectedQuest(note: string | null) {
+    if (!selectedQuest) return;
+    const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);
+    if (result.ok) {
+      const helpers = state.household.members.filter((member) => selectedQuest.participantIds.includes(member.id));
+      setGratitudeMoment({
+        title: "Effort noticed",
+        message: `${helpers.map((member) => member.displayName).join(" + ")} helped with ${selectedQuest.title}.`,
+        pointsLabel: selectedQuest.kind === "repair"
+          ? "Repair accepted"
+          : `+${selectedQuest.appreciationValue} ${helpers[0]?.pointLabel ?? "points"} each`,
+        homeEnergyLabel: selectedQuest.kind === "repair" ? "Treasure reopened" : "+1 Home Energy",
+      });
+    }
+    apply(result, true, "sharing-energy");
+  }
+
   return (
     <main className={activeMember.role === "child" ? `app-shell app-shell--child${section === "today" ? " app-shell--home-screen" : ""}` : "app-shell"}>
       <header className={activeMember.role === "child" ? "topbar topbar--child" : "topbar"}>
@@ -152,7 +171,7 @@ export function GameShell() {
           onClose={() => setSelectedQuestId(null)}
           onJoin={() => apply(joinQuest(state, selectedQuest.id, activeMember.id, now()))}
           onFinish={() => apply(markQuestDone(state, selectedQuest.id, activeMember.id, now()), true)}
-          onThank={(note) => apply(endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note), true, "sharing-energy")}
+          onThank={thankSelectedQuest}
           onNeedsMore={() => apply(endorseQuest(state, selectedQuest.id, activeMember.id, "needs_a_little_more", now()), true)}
         />
       ) : null}
@@ -164,6 +183,7 @@ export function GameShell() {
         apply(addRepairMission(state, mission, activeMember.id, now()));
         setRepairAddOpen(false);
       }} /> : null}
+      {gratitudeMoment ? <GratitudeMoment moment={gratitudeMoment} onClose={() => setGratitudeMoment(null)} /> : null}
       {toast ? <div className="toast" role="status">{toast}</div> : null}
     </main>
   );

@@ -96,12 +96,12 @@ export function QuestDetailSheet({
             <button className="primary-button" type="button" onClick={() => {
               tap(22);
               onJoin();
-            }}>{repair ? "I'll make it right" : childView ? "I'll help!" : "Join this quest"}</button>
+            }}>{repair ? "I'll make it right" : "I'll help"}</button>
           ) : null}
           {repair && ["needed", "active"].includes(quest.state) && !activeJoined && !repairTargetedToActiveMember ? (
             <p className="waiting-message"><HeartHandshake size={20} /> This Repair Mission belongs to {repairTarget?.displayName ?? "another family member"}.</p>
           ) : null}
-          {(["needed", "active"].includes(quest.state) && activeJoined) ? <HoldToFinishButton label={repair ? "Hold: I made it right" : undefined} onFinish={() => {
+          {(["needed", "active"].includes(quest.state) && activeJoined) ? <HoldToFinishButton label={repair ? "Hold when repaired" : "Hold when finished"} onFinish={() => {
             tap([30, 35, 50]);
             onFinish();
           }} /> : null}
@@ -120,7 +120,7 @@ export function QuestDetailSheet({
               <button className="primary-button primary-button--thanks" type="button" onClick={() => {
                 tap([20, 30, 60]);
                 onThank(thanksNote);
-              }}>Send thanks</button>
+              }}>I saw it – send thanks</button>
               <button className="text-button" type="button" onClick={onNeedsMore}>Needs one small finishing touch</button>
             </>
           ) : null}

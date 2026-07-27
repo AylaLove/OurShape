@@ -2,6 +2,7 @@ import type { DailyQuest, GameState, HouseholdMember } from "@family-game/domain
 import { Hand, Heart, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
+import { groupWaitingQuests } from "./gratitude-presentation";
 
 export function GratitudeView({
   state,
@@ -16,7 +17,8 @@ export function GratitudeView({
   onSelectQuest: (quest: DailyQuest) => void;
   onHighFive: (memberId: string) => void;
 }) {
-  const waiting = state.quests.filter((quest) => quest.state === "pending_endorsement");
+  const { needsYourThanks, waitingForSomeoneElse } = groupWaitingQuests(state.quests, activeMember.id);
+  const waitingCount = needsYourThanks.length + waitingForSomeoneElse.length;
   const recentThanks = state.history.filter((event) => event.type === "thanked").slice(0, 4);
 
   return (
@@ -27,32 +29,46 @@ export function GratitudeView({
       </header>
 
       <div className="gratitude-hero">
-        <HomeDinosaur state={waiting.length ? "carrying-energy" : "gratitude"} size="medium" />
+        <HomeDinosaur state={waitingCount ? "carrying-energy" : "gratitude"} size="medium" />
         <div>
           <p className="eyebrow">HOME ENERGY · {homeEnergy}</p>
-          <h2>{waiting.length ? "Some effort is waiting to be seen" : "The gratitude loop is clear"}</h2>
-          <p>Thanks closes the loop. It says, “Your effort mattered here.”</p>
+          <h2>{needsYourThanks.length ? "Someone needs your thanks" : waitingForSomeoneElse.length ? "Your help is waiting to be noticed" : "Everyone has been noticed"}</h2>
+          <p>A high five notices the effort. Watch Points reward the helper. Home Energy grows for everyone.</p>
         </div>
       </div>
 
-      <div className="subsection-heading"><h2>Waiting for thanks</h2><span>{waiting.length}</span></div>
-      {waiting.length ? (
+      <div className="subsection-heading"><h2>Needs your thanks</h2><span>{needsYourThanks.length}</span></div>
+      {needsYourThanks.length ? (
         <div className="gratitude-list">
-          {waiting.map((quest) => {
+          {needsYourThanks.map((quest) => {
             const helpers = state.household.members.filter((member) => quest.participantIds.includes(member.id));
-            const canThank = !quest.participantIds.includes(activeMember.id);
             return (
               <button className="gratitude-row" type="button" key={quest.id} onClick={() => onSelectQuest(quest)}>
                 <span className="gratitude-row__people">
                   {helpers.map((member) => <span className="mini-avatar" style={{ "--member-colour": member.colour } as CSSProperties} key={member.id}>{member.initials}</span>)}
                 </span>
-                <span><strong>{quest.title}</strong><small>{canThank ? "Tap to send thanks" : "Another person will thank this"}</small></span>
+                <span><strong>{quest.title}</strong><small>I saw it – send thanks</small></span>
                 <Heart size={20} aria-hidden="true" />
               </button>
             );
           })}
         </div>
-      ) : <p className="empty-message">Nothing is waiting. The gratitude loop is clear.</p>}
+      ) : <p className="empty-message">You have nothing to confirm right now.</p>}
+
+      {waitingForSomeoneElse.length ? (
+        <>
+          <div className="subsection-heading"><h2>Waiting for someone else</h2><span>{waitingForSomeoneElse.length}</span></div>
+          <div className="gratitude-list gratitude-list--waiting">
+            {waitingForSomeoneElse.map((quest) => (
+              <div className="gratitude-row gratitude-row--waiting" key={quest.id}>
+                <span className="gratitude-row__people"><Sparkles size={18} /></span>
+                <span><strong>{quest.title}</strong><small>Your effort is safe. Another person will send thanks.</small></span>
+                <Heart size={20} aria-hidden="true" />
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       <div className="subsection-heading"><h2>High five someone</h2></div>
       <div className="high-five-row">
