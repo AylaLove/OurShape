@@ -1,6 +1,6 @@
 import { Gift, Hand, Home, ListTodo, Users } from "lucide-react";
 
-export type AppScreen = "today" | "quests" | "thanks" | "rewards" | "family";
+export type AppScreen = "today" | "help" | "quests" | "thanks" | "rewards" | "family";
 
 const items: Array<{ id: AppScreen; label: string; icon: typeof Home }> = [
   { id: "today", label: "Today", icon: Home },

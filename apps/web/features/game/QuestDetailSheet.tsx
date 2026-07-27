@@ -40,10 +40,10 @@ export function QuestDetailSheet({
   const [thanksNote, setThanksNote] = useState<string | null>(null);
   const phase = questPhase(quest, activeJoined, canThank);
 
-  function speak() {
+  function speakText(text: string) {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(quest.spokenInstruction));
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
   }
 
   function tap(pattern: number | number[]) {
@@ -66,10 +66,22 @@ export function QuestDetailSheet({
         <h2 id="quest-sheet-title">{quest.title}</h2>
         <div className="quest-sheet__instruction">
           <p>{quest.instruction}</p>
-          <button className={childView ? "listen-button" : "round-button round-button--plain"} type="button" onClick={speak} aria-label="Read quest aloud" title="Read aloud">
+          <button className={childView ? "listen-button" : "round-button round-button--plain"} type="button" onClick={() => speakText(quest.spokenInstruction)} aria-label="Read quest aloud" title="Read aloud">
             <Volume2 size={20} /><span>{childView ? "Hear it" : ""}</span>
           </button>
         </div>
+        {childView ? (
+          <div className="word-help" aria-label="Tap a word to hear it">
+            <small>Tap a word to hear it</small>
+            <div>
+              {quest.title.split(/\s+/).map((word, index) => (
+                <button type="button" key={`${word}-${index}`} onClick={() => speakText(word.replace(/[^\w'-]/g, ""))}>
+                  {word}<Volume2 size={13} />
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div className={childView ? "quest-sheet__people quest-sheet__people--child" : "quest-sheet__people"} aria-label="Quest participants">
           {childView ? (

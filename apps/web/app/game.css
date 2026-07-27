@@ -27,7 +27,7 @@
   display: grid;
   min-height: 0;
   flex: 1 1 auto;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   gap: 7px;
   overflow: hidden;
 }
@@ -84,6 +84,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+}
+
+.shape__heading > div:first-child {
+  min-width: 0;
 }
 
 .topbar__demo-chip {
@@ -1231,7 +1235,16 @@
   }
 
   .shape__energy-goal {
-    width: 136px;
+    width: 122px;
+    padding-inline: 7px;
+  }
+
+  .shape__heading {
+    gap: 8px;
+  }
+
+  .shape__heading h2 {
+    font-size: 18px;
   }
 
   .thanks-phrases {
