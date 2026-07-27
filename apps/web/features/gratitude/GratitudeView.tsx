@@ -1,5 +1,5 @@
 import type { DailyQuest, GameState, HouseholdMember } from "@family-game/domain";
-import { Hand, Heart, Sparkles } from "lucide-react";
+import { Coins, Hand, Heart, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { groupWaitingQuests } from "./gratitude-presentation";
@@ -33,7 +33,11 @@ export function GratitudeView({
         <div>
           <p className="eyebrow">HOME ENERGY · {homeEnergy}</p>
           <h2>{needsYourThanks.length ? "Someone needs your thanks" : waitingForSomeoneElse.length ? "Your help is waiting to be noticed" : "Everyone has been noticed"}</h2>
-          <p>A high five notices the effort. Watch Points reward the helper. Home Energy grows for everyone.</p>
+          <div className="reward-meaning" aria-label="How appreciation works">
+            <span><Hand size={17} /><b>High five</b><small>Someone noticed</small></span>
+            <span><Coins size={17} /><b>{activeMember.pointLabel}</b><small>Personal treasure</small></span>
+            <span><Sparkles size={17} /><b>Home Energy</b><small>Shared progress</small></span>
+          </div>
         </div>
       </div>
 
@@ -73,7 +77,7 @@ export function GratitudeView({
       <div className="subsection-heading"><h2>High five someone</h2></div>
       <div className="high-five-row">
         {state.household.members.filter((member) => member.id !== activeMember.id).map((member) => (
-          <button className="high-five-button" type="button" key={member.id} onClick={() => onHighFive(member.id)} style={{ "--member-colour": member.colour } as CSSProperties}>
+          <button className="high-five-button" type="button" key={member.id} onClick={() => onHighFive(member.id)} aria-label={`Send ${member.displayName} a high five. This acknowledges effort but does not exchange points.`} style={{ "--member-colour": member.colour } as CSSProperties}>
             <span>{member.initials}</span><Hand size={19} />{member.displayName}
           </button>
         ))}

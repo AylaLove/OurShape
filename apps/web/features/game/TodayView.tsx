@@ -14,6 +14,7 @@ export function TodayView({
   onSelectQuest,
   onQuickAdd,
   onHelp,
+  onSelectMember,
 }: {
   state: GameState;
   activeMember: HouseholdMember;
@@ -23,6 +24,7 @@ export function TodayView({
   onSelectQuest: (quest: DailyQuest) => void;
   onQuickAdd: () => void;
   onHelp: () => void;
+  onSelectMember: (member: HouseholdMember) => void;
 }) {
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const balances = contributionBalance(state, since);
@@ -31,7 +33,7 @@ export function TodayView({
     ? "We help, we notice, and our home grows stronger."
     : `${outstanding.length} household needs are open. Join one alone or do one together.`;
   const shape = (
-    <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={homeEnergy} homeGoal={homeGoal} childView={activeMember.role === "child"} />
+    <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={homeEnergy} homeGoal={homeGoal} childView={activeMember.role === "child"} onSelectMember={onSelectMember} />
   );
 
   if (activeMember.role === "child") {

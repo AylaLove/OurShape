@@ -34,6 +34,8 @@ import {
 import { DEMO_HOME_GOAL } from "@/features/energy/home-goal";
 import { GratitudeMoment, type GratitudeMomentData } from "@/features/gratitude/GratitudeMoment";
 import { HelpView } from "@/features/help/HelpView";
+import { OpeningCheckIn } from "@/features/check-in/OpeningCheckIn";
+import { ProfileSheet } from "@/features/profiles/ProfileSheet";
 
 function now() {
   return new Date().toISOString();
@@ -52,6 +54,9 @@ export function GameShell() {
   const [repairAddOpen, setRepairAddOpen] = useState(false);
   const [companionMoment, setCompanionMoment] = useState<HomeDinosaurState | null>(null);
   const [gratitudeMoment, setGratitudeMoment] = useState<GratitudeMomentData | null>(null);
+  const [checkInOpen, setCheckInOpen] = useState(true);
+  const [profileMemberId, setProfileMemberId] = useState<string | null>(null);
+  const [soundOn, setSoundOn] = useState(true);
   const activeMember = state.household.members.find((member) => member.id === activeMemberId) ?? state.household.members[0];
   const selectedQuest = useMemo(() => state.quests.find((quest) => quest.id === selectedQuestId) ?? null, [selectedQuestId, state.quests]);
   const waitingCount = state.quests.filter((quest) => quest.state === "pending_endorsement" && !quest.participantIds.includes(activeMember.id)).length;
@@ -63,6 +68,7 @@ export function GameShell() {
   );
   const energy = homeEnergy(state);
   const personalPoints = pointBalance(state, activeMember.id);
+  const profileMember = state.household.members.find((member) => member.id === profileMemberId) ?? null;
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -89,6 +95,10 @@ export function GameShell() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [section, activeMemberId]);
+
+  useEffect(() => {
+    setCheckInOpen(true);
+  }, [activeMemberId]);
 
   useEffect(() => {
     if (!toast) return;
@@ -130,6 +140,22 @@ export function GameShell() {
     apply(result, true, "sharing-energy");
   }
 
+  function celebrateHighFive(memberId: string) {
+    const recipient = state.household.members.find((member) => member.id === memberId);
+    const result = sendHighFive(state, activeMember.id, memberId, now());
+    if (result.ok && recipient) {
+      if (navigator.vibrate) navigator.vibrate(35);
+      if (soundOn) playCelebrationTone();
+      setGratitudeMoment({
+        title: `High five for ${recipient.displayName}`,
+        message: "You noticed their effort. That kindness stands on its own.",
+        pointsLabel: "No points exchanged",
+        homeEnergyLabel: "Connection strengthened",
+      });
+    }
+    apply(result, false, "celebrating");
+  }
+
   return (
     <main className={activeMember.role === "child" ? `app-shell app-shell--child${section === "today" ? " app-shell--home-screen" : ""}` : "app-shell"}>
       <header className={activeMember.role === "child" ? "topbar topbar--child" : "topbar"}>
@@ -156,10 +182,14 @@ export function GameShell() {
 
       {activeMember.role === "adult" ? <div className="demo-banner" role="status"><ShieldCheck size={15} /><span>Private playable demo</span><Cloud size={15} /><span>{databaseReady ? "Development database connected" : "Resettable demo data: not yet shared across phones"}</span></div> : null}
 
-      {section === "today" ? <TodayView state={state} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={energy} homeGoal={DEMO_HOME_GOAL} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onHelp={() => setSection("help")} /> : null}
+      {section === "today" && checkInOpen ? <OpeningCheckIn state={state} activeMember={activeMember} onClose={() => setCheckInOpen(false)} onOpen={(screen) => {
+        setCheckInOpen(false);
+        setSection(screen);
+      }} /> : null}
+      {section === "today" ? <TodayView state={state} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={energy} homeGoal={DEMO_HOME_GOAL} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onHelp={() => setSection("help")} onSelectMember={(member) => setProfileMemberId(member.id)} /> : null}
       {section === "help" ? <HelpView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onShowAll={() => setSection("quests")} /> : null}
       {section === "quests" ? <AllQuestsView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onAddRepair={() => setRepairAddOpen(true)} /> : null}
-      {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} onHighFive={(memberId) => apply(sendHighFive(state, activeMember.id, memberId, now()), false, "celebrating")} /> : null}
+      {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} onHighFive={celebrateHighFive} /> : null}
       {section === "rewards" ? <RewardsView state={state} activeMember={activeMember} onRedeem={(rewardId) => apply(redeemReward(state, rewardId, activeMember.id, now()))} /> : null}
       {section === "family" ? <FamilyView state={state} activeMember={activeMember} /> : null}
 
@@ -186,7 +216,31 @@ export function GameShell() {
         setRepairAddOpen(false);
       }} /> : null}
       {gratitudeMoment ? <GratitudeMoment moment={gratitudeMoment} onClose={() => setGratitudeMoment(null)} /> : null}
+      {profileMember ? <ProfileSheet state={state} member={profileMember} soundOn={soundOn} onToggleSound={() => setSoundOn((value) => !value)} onClose={() => setProfileMemberId(null)} /> : null}
       {toast ? <div className="toast" role="status">{toast}</div> : null}
     </main>
   );
+}
+
+function playCelebrationTone() {
+  try {
+    const AudioContextConstructor = window.AudioContext ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+    const context = new AudioContextConstructor();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(520, context.currentTime);
+    oscillator.frequency.linearRampToValueAtTime(680, context.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.08, context.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.2);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.21);
+    oscillator.addEventListener("ended", () => void context.close(), { once: true });
+  } catch {
+    // The visual acknowledgement remains available when audio is blocked.
+  }
 }

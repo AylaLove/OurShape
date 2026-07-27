@@ -21,3 +21,7 @@
 | D-017 | Give the child phone a revocable limited session | Leaving a parent account open on the child’s device would expose adult controls and private rewards; the child device should only act as its claimed child profile | Accepted |
 | D-018 | Keep Home for household state and Quests for choosing work | The family shape and companion should communicate how the home is doing; placing task controls over them made both ideas harder to understand | Accepted |
 | D-019 | Use Repair Missions instead of removing earned points | Consequences should teach repair and restored trust. Earned points remain intact, while optional rewards wait until a specific repair is completed and acknowledged by another member | Accepted |
+| D-020 | Make `How can I help?` the child's primary action | A child should receive a small relevant choice instead of interpreting a long household task list | Accepted |
+| D-021 | Keep Help as an internal focused screen | It is a moment in the cooperation loop, not another permanent bottom-navigation destination | Accepted |
+| D-022 | Keep high fives, personal points, and Home Energy separate | Social acknowledgement, spendable reward, and shared household progress have different meanings and must not silently alter one another | Accepted |
+| D-023 | Derive check-ins and profiles from existing state | Status views should explain the current source of truth, not create another store or progress system | Accepted |

@@ -17,6 +17,7 @@ export function HouseholdShape({
   homeEnergy,
   homeGoal,
   childView = false,
+  onSelectMember,
 }: {
   household: Household;
   quests: DailyQuest[];
@@ -26,6 +27,7 @@ export function HouseholdShape({
   homeEnergy: number;
   homeGoal: HomeGoal;
   childView?: boolean;
+  onSelectMember?: (member: HouseholdMember) => void;
 }) {
   const [dinosaurSpeaking, setDinosaurSpeaking] = useState(false);
   const basePoints = regularPolygonPoints(household.members.length);
@@ -70,14 +72,17 @@ export function HouseholdShape({
           const point = basePoints[index];
           const selected = member.id === activeMember.id;
           return (
-            <div
+            <button
+              type="button"
               className={selected ? "shape-member shape-member--active" : "shape-member"}
               style={{ "--member-colour": member.colour, left: `${(point.x / 360) * 100}%`, top: `${(point.y / 360) * 100}%` } as CSSProperties}
               key={member.id}
+              onClick={() => onSelectMember?.(member)}
+              aria-label={`Open ${member.displayName}'s profile`}
             >
               <span className="shape-member__avatar">{member.initials}</span>
               <span>{member.displayName}</span>
-            </div>
+            </button>
           );
         })}
 

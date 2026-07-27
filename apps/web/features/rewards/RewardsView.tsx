@@ -21,7 +21,7 @@ export function RewardsView({ state, activeMember, onRedeem }: { state: GameStat
           <LockKeyhole size={20} aria-hidden="true" />
         </div>
       ) : null}
-      <p className="view-intro">Points celebrate participation. Person-provided rewards become requests, so everyone can freely say yes.</p>
+      <p className="view-intro">{activeMember.pointLabel} are personal and spendable. Home Energy stays separate and grows toward a shared family activity.</p>
       <div className="reward-grid">
         {visible.map((reward) => {
           const Icon = REWARD_ICONS[reward.icon];

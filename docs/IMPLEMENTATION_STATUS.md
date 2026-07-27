@@ -16,6 +16,10 @@ The child profile uses simpler language, spoken quest instructions, large contro
 The child Home now uses the living household shape as the primary game surface:
 
 - the triangle, household members, Home Energy, and dinosaur communicate household state;
+- a compact, dismissible opening check-in shows only relevant points, thanks, Repair, or affordable Treasure;
+- `How can I help?` is the dominant action and offers at most three relevant choices;
+- recommendations prioritise the active member's Repair Mission, already-joined work, suggested work, then open shared work;
+- tapping a family member opens a simple profile with personal points and recent high fives;
 - chores no longer float over or obscure the family shape;
 - all task selection lives on the separate `Quests` screen;
 - demo and management information are removed from the ordinary child screen;
@@ -33,6 +37,7 @@ The child quest itself is now a focused action scene:
 
 - one large quest icon and one truthful dinosaur pose;
 - one spoken instruction control;
+- difficult title words can be spoken individually without removing all reading;
 - one simple participant display;
 - one obvious action at a time;
 - pending work becomes a visible energy object;
@@ -66,6 +71,13 @@ Home Energy now has a concrete shared purpose:
 - the child profile shows its own spendable Watch Points separately;
 - Home Energy is collective and cannot be spent as personal currency.
 
+The appreciation loop now keeps three ideas distinct:
+
+- a high five means another person noticed;
+- Watch or Chill Points are personal and spendable;
+- Home Energy is shared progress toward a family activity;
+- a high five produces visible, optional-sound feedback but never changes either points ledger.
+
 ## What is structurally implemented
 
 - Modular Next.js and TypeScript application.
@@ -86,6 +98,8 @@ Home Energy now has a concrete shared purpose:
 - One-use expiring invitations for adding the second adult account.
 - Revocable child-device access claimed through a short-lived parent code.
 - Repair Missions with target enforcement, reward locking, non-credit completion, acknowledgement, and audit history.
+- A pure, tested child-help recommender that does not alter quest state.
+- Compact profile and opening-check-in views derived from the existing household snapshot.
 
 ## What still needs external setup
 
@@ -108,6 +122,10 @@ that browser-only demo state is a database.
 Mobile QA currently covers fixed 375 x 667 and 414 x 896 frames. The child Home has no
 horizontal overflow, does not require page scrolling, and no longer places task controls
 over the dinosaur or household shape at either size.
+
+The short-increment usability roadmap is complete in three public checkpoints. Automated
+coverage currently passes 29 tests alongside TypeScript, schema-contract, project-health,
+and production-build checks.
 
 ## Recommended next checkpoint
 

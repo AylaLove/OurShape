@@ -203,6 +203,39 @@
   opacity: 0.82;
 }
 
+.reward-meaning {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.reward-meaning span {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 5px;
+  border: 1px solid rgba(244, 211, 114, 0.18);
+  border-radius: 7px;
+  color: #f7db87;
+  background: rgba(247, 219, 135, 0.07);
+  text-align: center;
+}
+
+.reward-meaning b {
+  color: #f6f3e8;
+  font-size: 0.72rem;
+}
+
+.reward-meaning small {
+  overflow: hidden;
+  color: #aebeb6;
+  font-size: 0.62rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .gratitude-row--waiting {
   cursor: default;
 }
@@ -284,6 +317,194 @@
   .gratitude-moment {
     animation: none;
   }
+}
+
+.opening-check-in {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 9px;
+  padding: 12px;
+  border: 1px solid rgba(242, 209, 104, 0.28);
+  border-radius: 8px;
+  color: #f7f4e9;
+  background: #161e19;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.opening-check-in__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.opening-check-in__heading h2,
+.opening-check-in__heading p {
+  margin: 0;
+}
+
+.opening-check-in__heading h2 {
+  margin-top: 2px;
+  font-size: 1rem;
+}
+
+.opening-check-in__heading > button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #b9c8c0;
+  background: #25332d;
+}
+
+.opening-check-in__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  gap: 7px;
+}
+
+.opening-check-in__items button {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid rgba(112, 219, 172, 0.18);
+  border-radius: 7px;
+  color: #eaf8f1;
+  background: #183127;
+  text-align: left;
+}
+
+.opening-check-in__items button:disabled {
+  opacity: 1;
+}
+
+.opening-check-in__items span {
+  display: grid;
+  min-width: 0;
+}
+
+.opening-check-in__items strong {
+  color: #ffe18a;
+  font-size: 1.05rem;
+}
+
+.opening-check-in__items small {
+  overflow: hidden;
+  color: #b8c9c0;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-sheet {
+  position: relative;
+  width: min(410px, calc(100vw - 26px));
+  margin: auto;
+  padding: 28px 22px 22px;
+  border: 1px solid rgba(111, 218, 171, 0.3);
+  border-radius: 8px;
+  color: #f6f4e9;
+  background: #111f19;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  text-align: center;
+}
+
+.profile-sheet__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #cfddd6;
+  background: #24332d;
+}
+
+.profile-sheet__avatar {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 14px;
+  place-items: center;
+  border: 5px solid #101b17;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--member-colour);
+  box-shadow: 0 0 0 3px var(--member-colour), 0 12px 28px rgba(0, 0, 0, 0.35);
+  font-size: 1.5rem;
+  font-weight: 850;
+}
+
+.profile-sheet h2,
+.profile-sheet p {
+  margin: 4px 0;
+}
+
+.profile-sheet__balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 14px 0;
+  padding: 9px 13px;
+  border: 1px solid rgba(245, 204, 93, 0.28);
+  border-radius: 999px;
+  color: #ffe28c;
+  background: #2b2615;
+}
+
+.profile-sheet__balance strong {
+  font-size: 1.25rem;
+}
+
+.profile-sheet__balance span {
+  color: #d6c98e;
+  font-size: 0.78rem;
+}
+
+.profile-sheet__section {
+  margin: 10px 0 16px;
+  padding: 14px;
+  border: 1px solid rgba(111, 218, 171, 0.16);
+  border-radius: 8px;
+  background: #162821;
+  text-align: left;
+}
+
+.profile-sheet__section h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+}
+
+.profile-sheet__section p {
+  color: #b9cbc2;
+  font-size: 0.82rem;
+}
+
+.profile-sheet__sound {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 9px 13px;
+  border: 1px solid #3b5a4d;
+  border-radius: 7px;
+  color: #dcece4;
+  background: #1d332a;
+  font-weight: 750;
 }
 
 .help-primary-action {
