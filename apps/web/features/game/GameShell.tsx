@@ -35,6 +35,10 @@ import {
 } from "@/features/companion/companion-state";
 import { DEMO_HOME_GOAL } from "@/features/energy/home-goal";
 import { GratitudeMoment, type GratitudeMomentData } from "@/features/gratitude/GratitudeMoment";
+import {
+  recognitionNoticesForQuest,
+  type RecognitionNotice,
+} from "@/features/gratitude/recognition-notices";
 import { HelpView } from "@/features/help/HelpView";
 import { OpeningCheckIn } from "@/features/check-in/OpeningCheckIn";
 import { ProfileSheet } from "@/features/profiles/ProfileSheet";
@@ -57,6 +61,7 @@ export function GameShell() {
   const [repairAddOpen, setRepairAddOpen] = useState(false);
   const [companionMoment, setCompanionMoment] = useState<HomeDinosaurState | null>(null);
   const [gratitudeMoment, setGratitudeMoment] = useState<GratitudeMomentData | null>(null);
+  const [recognitionNotices, setRecognitionNotices] = useState<RecognitionNotice[]>([]);
   const [checkInOpen, setCheckInOpen] = useState(true);
   const [profileMemberId, setProfileMemberId] = useState<string | null>(null);
   const [dailyPlanMemberId, setDailyPlanMemberId] = useState<string | null>(null);
@@ -107,6 +112,13 @@ export function GameShell() {
   }, [activeMemberId]);
 
   useEffect(() => {
+    const notice = recognitionNotices.find((entry) => entry.memberId === activeMemberId);
+    if (!notice) return;
+    setGratitudeMoment(notice.moment);
+    setRecognitionNotices((entries) => entries.filter((entry) => entry !== notice));
+  }, [activeMemberId, recognitionNotices]);
+
+  useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(null), 2800);
     return () => window.clearTimeout(timer);
@@ -134,6 +146,10 @@ export function GameShell() {
     const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);
     if (result.ok) {
       const helpers = state.household.members.filter((member) => selectedQuest.participantIds.includes(member.id));
+      setRecognitionNotices((notices) => [
+        ...notices,
+        ...recognitionNoticesForQuest(selectedQuest, state.household.members, activeMember),
+      ]);
       if (navigator.vibrate) navigator.vibrate(35);
       if (soundOn) playCelebrationTone();
       setGratitudeMoment({
@@ -166,7 +182,7 @@ export function GameShell() {
             setSelectedQuestId(null);
             if (section === "quests" || (state.household.members.find((member) => member.id === memberId)?.role === "child" && section === "family")) setSection("today");
           }} />
-          <button className="round-button round-button--plain notification-button" type="button" aria-label={`${waitingCount} items waiting for thanks`} onClick={() => setSection("thanks")}>
+          <button className="round-button round-button--plain notification-button" type="button" aria-label={`${waitingCount} ${waitingCount === 1 ? "item" : "items"} waiting for thanks`} onClick={() => setSection("thanks")}>
             <Bell size={20} />{waitingCount ? <span>{waitingCount}</span> : null}
           </button>
         </div>
