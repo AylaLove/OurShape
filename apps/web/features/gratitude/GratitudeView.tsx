@@ -1,5 +1,5 @@
 import type { DailyQuest, GameState, HouseholdMember } from "@family-game/domain";
-import { Coins, Hand, Heart, Sparkles } from "lucide-react";
+import { Hand, Heart, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { groupWaitingQuests } from "./gratitude-presentation";
@@ -9,13 +9,11 @@ export function GratitudeView({
   activeMember,
   homeEnergy,
   onSelectQuest,
-  onHighFive,
 }: {
   state: GameState;
   activeMember: HouseholdMember;
   homeEnergy: number;
   onSelectQuest: (quest: DailyQuest) => void;
-  onHighFive: (memberId: string) => void;
 }) {
   const { needsYourThanks, waitingForSomeoneElse } = groupWaitingQuests(state.quests, activeMember.id);
   const waitingCount = needsYourThanks.length + waitingForSomeoneElse.length;
@@ -33,11 +31,7 @@ export function GratitudeView({
         <div>
           <p className="eyebrow">HOME ENERGY · {homeEnergy}</p>
           <h2>{needsYourThanks.length ? "Someone needs your thanks" : waitingForSomeoneElse.length ? "Your help is waiting to be noticed" : "Everyone has been noticed"}</h2>
-          <div className="reward-meaning" aria-label="How appreciation works">
-            <span><Hand size={17} /><b>High five</b><small>Someone noticed</small></span>
-            <span><Coins size={17} /><b>{activeMember.pointLabel}</b><small>Personal treasure</small></span>
-            <span><Sparkles size={17} /><b>Home Energy</b><small>Shared progress</small></span>
-          </div>
+          <p className="gratitude-hero__rule"><Hand size={16} /> Thanks confirms the help and awards High Fives.</p>
         </div>
       </div>
 
@@ -73,15 +67,6 @@ export function GratitudeView({
           </div>
         </>
       ) : null}
-
-      <div className="subsection-heading"><h2>High five someone</h2></div>
-      <div className="high-five-row">
-        {state.household.members.filter((member) => member.id !== activeMember.id).map((member) => (
-          <button className="high-five-button" type="button" key={member.id} onClick={() => onHighFive(member.id)} aria-label={`Send ${member.displayName} a high five. This acknowledges effort but does not exchange points.`} style={{ "--member-colour": member.colour } as CSSProperties}>
-            <span>{member.initials}</span><Hand size={19} />{member.displayName}
-          </button>
-        ))}
-      </div>
 
       <div className="subsection-heading"><h2>Recently appreciated</h2></div>
       <div className="history-lines">

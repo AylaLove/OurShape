@@ -58,7 +58,7 @@ One person may record that somebody else helped. "Someone Helped" supports unsch
 
 ## Points and rewards
 
-The underlying ledger records appreciation points. Each profile may display a different friendly name. Adults may call them Chill Points; the child may call them Watch Points.
+The underlying ledger records appreciation points. The product calls this personal, spendable currency **High Fives** for every household member. High Fives are awarded only after another person confirms the help and sends thanks.
 
 Suitable rewards include:
 

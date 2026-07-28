@@ -8,7 +8,6 @@ import {
   markQuestDone,
   pointBalance,
   redeemReward,
-  sendHighFive,
   setDailyPlan,
   todayPlan,
   type DailyQuest,
@@ -135,6 +134,8 @@ export function GameShell() {
     const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);
     if (result.ok) {
       const helpers = state.household.members.filter((member) => selectedQuest.participantIds.includes(member.id));
+      if (navigator.vibrate) navigator.vibrate(35);
+      if (soundOn) playCelebrationTone();
       setGratitudeMoment({
         title: "Effort noticed",
         message: `${helpers.map((member) => member.displayName).join(" + ")} helped with ${selectedQuest.title}.`,
@@ -145,22 +146,6 @@ export function GameShell() {
       });
     }
     apply(result, true, "sharing-energy");
-  }
-
-  function celebrateHighFive(memberId: string) {
-    const recipient = state.household.members.find((member) => member.id === memberId);
-    const result = sendHighFive(state, activeMember.id, memberId, now());
-    if (result.ok && recipient) {
-      if (navigator.vibrate) navigator.vibrate(35);
-      if (soundOn) playCelebrationTone();
-      setGratitudeMoment({
-        title: `High five for ${recipient.displayName}`,
-        message: "You noticed their effort. That kindness stands on its own.",
-        pointsLabel: "No points exchanged",
-        homeEnergyLabel: "Connection strengthened",
-      });
-    }
-    apply(result, false, "celebrating");
   }
 
   return (
@@ -196,7 +181,7 @@ export function GameShell() {
       {section === "today" ? <TodayView state={state} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={energy} homeGoal={DEMO_HOME_GOAL} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onHelp={() => setSection("help")} onSelectMember={(member) => setProfileMemberId(member.id)} /> : null}
       {section === "help" ? <HelpView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onShowAll={() => setSection("quests")} /> : null}
       {section === "quests" ? <AllQuestsView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onAddRepair={() => setRepairAddOpen(true)} /> : null}
-      {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} onHighFive={celebrateHighFive} /> : null}
+      {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} /> : null}
       {section === "rewards" ? <RewardsView state={state} activeMember={activeMember} onRedeem={(rewardId) => apply(redeemReward(state, rewardId, activeMember.id, now()))} /> : null}
       {section === "family" ? <FamilyView state={state} activeMember={activeMember} /> : null}
 

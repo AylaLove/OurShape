@@ -37,13 +37,13 @@ function stateWithRepair(): GameState {
 }
 
 describe("openingCheckInItems", () => {
-  it("shows points, actionable thanks, and the active member's repair", () => {
+  it("shows the active member's repair without a generic balance card", () => {
     const state = stateWithRepair();
     const sage = state.household.members.find((member) => member.id === "demo-child")!;
     const items = openingCheckInItems(state, sage);
 
-    expect(items.map((item) => item.id)).toEqual(["points", "repair"]);
-    expect(items[0].value).toBe("3");
+    expect(items.map((item) => item.id)).toEqual(["repair"]);
+    expect(items[0]).toMatchObject({ label: "Repair waiting", value: "1" });
   });
 
   it("shows affordable treasure when repair is clear", () => {
@@ -51,6 +51,6 @@ describe("openingCheckInItems", () => {
     state.quests = state.quests.filter((quest) => quest.kind !== "repair");
     const sage = state.household.members.find((member) => member.id === "demo-child")!;
 
-    expect(openingCheckInItems(state, sage).map((item) => item.id)).toEqual(["points", "treasure"]);
+    expect(openingCheckInItems(state, sage).map((item) => item.id)).toEqual(["treasure"]);
   });
 });

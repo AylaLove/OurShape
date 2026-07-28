@@ -11,12 +11,12 @@ The private playable demo proves the intended household loop:
 5. See appreciation points and contribution evidence awarded once.
 6. Review gratitude and chronological household history.
 
-The child profile uses simpler language, spoken quest instructions, large controls, Watch Points, child-safe rewards, and a supportive family view without individual balance ratios.
+The child profile uses simpler language, spoken quest instructions, large controls, High Fives, child-safe rewards, and a supportive family view without individual balance ratios.
 
 The child Home now uses the living household shape as the primary game surface:
 
 - the triangle, household members, Home Energy, and dinosaur communicate household state;
-- a compact modal check-in briefly shows only relevant points, thanks, Repair, or affordable Treasure without shrinking Home;
+- a compact modal check-in briefly shows only relevant thanks, Repair, or affordable Treasure without shrinking Home;
 - `How can I help?` is the dominant action and offers at most three relevant choices;
 - recommendations prioritise the active member's Repair Mission, already-joined work, suggested work, then open shared work;
 - tapping a family member opens a simple profile with personal points and recent high fives;
@@ -42,7 +42,7 @@ The child quest itself is now a focused action scene:
 - one simple participant display;
 - one obvious action at a time;
 - pending work becomes a visible energy object;
-- Watch Points are clearly delayed until another person sends thanks.
+- High Fives are clearly delayed until another person sends thanks.
 
 Repair Missions now provide a bounded consequence loop:
 
@@ -67,17 +67,16 @@ The dinosaur and habitat now reflect the real quest state:
 
 Home Energy now has a concrete shared purpose:
 
-- the child sees current energy and the next household goal on Home;
+- the child sees current energy on Home;
 - the demo goal is `Family movie night` at five verified energy;
-- the child profile shows its own spendable Watch Points separately;
+- the child profile shows its own spendable High Fives separately;
 - Home Energy is collective and cannot be spent as personal currency.
 
-The appreciation loop now keeps three ideas distinct:
+The appreciation loop now keeps two ledgers distinct:
 
-- a high five means another person noticed;
-- Watch or Chill Points are personal and spendable;
+- High Fives are personal and spendable, awarded after another person sends thanks;
 - Home Energy is shared progress toward a family activity;
-- a high five produces visible, optional-sound feedback but never changes either points ledger.
+- the thank-you moment produces visible, optional-sound feedback without creating a second reward system.
 
 ## What is structurally implemented
 

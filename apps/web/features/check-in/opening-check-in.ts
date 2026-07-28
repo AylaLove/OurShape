@@ -1,7 +1,7 @@
 import { hasOpenRepairMission, pointBalance, type GameState, type HouseholdMember } from "@family-game/domain";
 
 export interface OpeningCheckInItem {
-  id: "points" | "thanks" | "repair" | "treasure";
+  id: "thanks" | "repair" | "treasure";
   label: string;
   value: string;
   destination: "thanks" | "quests" | "rewards" | null;
@@ -17,12 +17,7 @@ export function openingCheckInItems(state: GameState, member: HouseholdMember): 
     (reward) => (reward.audience === "all" || reward.audience === member.role) && reward.cost <= balance,
   ).length;
 
-  const items: OpeningCheckInItem[] = [{
-    id: "points",
-    label: member.pointLabel,
-    value: String(balance),
-    destination: "rewards",
-  }];
+  const items: OpeningCheckInItem[] = [];
 
   if (thanksCount) items.push({
     id: "thanks",
@@ -32,8 +27,8 @@ export function openingCheckInItems(state: GameState, member: HouseholdMember): 
   });
   if (repairOpen) items.push({
     id: "repair",
-    label: "Repair Mission",
-    value: "Ready",
+    label: "Repair waiting",
+    value: "1",
     destination: "quests",
   });
   if (!repairOpen && affordableCount) items.push({

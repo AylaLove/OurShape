@@ -1,10 +1,9 @@
-import { CircleCheck, Gift, HeartHandshake, Sparkles, X } from "lucide-react";
+import { CircleCheck, Gift, HeartHandshake, X } from "lucide-react";
 import type { GameState, HouseholdMember } from "@family-game/domain";
 import type { AppScreen } from "@/components/AppNav";
 import { openingCheckInItems } from "./opening-check-in";
 
 const ICONS = {
-  points: Sparkles,
   thanks: CircleCheck,
   repair: HeartHandshake,
   treasure: Gift,
@@ -22,6 +21,13 @@ export function OpeningCheckIn({
   onOpen: (screen: AppScreen) => void;
 }) {
   const items = openingCheckInItems(state, activeMember);
+  if (!items.length) return null;
+  const title = items.some((item) => item.id === "thanks")
+    ? "Someone needs your thanks"
+    : items.some((item) => item.id === "repair")
+      ? "A repair is waiting"
+      : "Treasure is waiting";
+
   return (
     <div className="opening-check-in-backdrop" role="presentation" onClick={onClose}>
       <section
@@ -32,7 +38,7 @@ export function OpeningCheckIn({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="opening-check-in__heading">
-          <div><p className="eyebrow">WELCOME BACK, {activeMember.displayName.toUpperCase()}</p><h2>A quick update from home</h2></div>
+          <div><p className="eyebrow">{activeMember.displayName.toUpperCase()}</p><h2>{title}</h2></div>
           <button type="button" onClick={onClose} aria-label="Dismiss welcome check-in"><X size={18} /></button>
         </div>
         <div className="opening-check-in__items">
@@ -51,7 +57,7 @@ export function OpeningCheckIn({
             );
           })}
         </div>
-        <button className="opening-check-in__continue" type="button" onClick={onClose}>See our home</button>
+        <button className="opening-check-in__continue" type="button" onClick={onClose}>SEE OUR HOME</button>
       </section>
     </div>
   );

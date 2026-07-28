@@ -8,7 +8,7 @@ household.
 - switch between the three demo family members;
 - join and complete demo quests;
 - endorse another person's work;
-- see Watch Points, gratitude, Home Energy, and reward spending;
+- see High Fives, gratitude, Home Energy, and reward spending;
 - install the preview on a phone home screen.
 
 ## Important Limits

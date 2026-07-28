@@ -23,7 +23,10 @@ export function ProfileSheet({
   onEditDailyPlan: () => void;
   onClose: () => void;
 }) {
-  const received = state.highFives.filter((highFive) => highFive.toMemberId === member.id).slice(-3).reverse();
+  const earned = state.pointLedger
+    .filter((entry) => entry.memberId === member.id && entry.reason === "quest_endorsed" && entry.amount > 0)
+    .slice(-3)
+    .reverse();
   const balance = pointBalance(state, member.id);
   const plan = todayPlan(state, member.id, today);
   const intentions = state.quests.filter((quest) => plan?.intentionQuestIds.includes(quest.id));
@@ -55,11 +58,11 @@ export function ProfileSheet({
           {activeMember.id === member.id ? <button className="profile-sheet__plan-button" type="button" onClick={onEditDailyPlan}>{plan ? "Adjust today’s plan" : "Set today’s plan"}</button> : null}
         </div>
         <div className="profile-sheet__section">
-          <h3><Hand size={18} /> Recent high fives</h3>
-          {received.length ? received.map((highFive) => {
-            const sender = state.household.members.find((candidate) => candidate.id === highFive.fromMemberId);
-            return <p key={highFive.id}>{sender?.displayName ?? "Someone"} noticed {member.displayName}.</p>;
-          }) : <p>No high fives yet. Kindness does not need points to count.</p>}
+          <h3><Hand size={18} /> High Fives earned</h3>
+          {earned.length ? earned.map((entry) => {
+            const quest = state.quests.find((candidate) => candidate.id === entry.questId);
+            return <p key={entry.id}><strong>+{entry.amount}</strong> · {quest?.title ?? "Help that was noticed"}</p>;
+          }) : <p>No High Fives earned yet. Kindness still matters.</p>}
         </div>
         <button className="profile-sheet__sound" type="button" onClick={onToggleSound}>
           {soundOn ? <Volume2 size={20} /> : <VolumeX size={20} />}

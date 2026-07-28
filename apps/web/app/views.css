@@ -168,72 +168,8 @@
   font-size: 13px;
 }
 
-.high-five-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.high-five-button {
-  --member-colour: var(--forest);
-  display: flex;
-  min-height: 54px;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.high-five-button > span {
-  display: grid;
-  width: 29px;
-  height: 29px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--member-colour);
-  color: #fff;
-  font-size: 10px;
-}
-
 .gratitude-list--waiting {
   opacity: 0.82;
-}
-
-.reward-meaning {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.reward-meaning span {
-  display: grid;
-  min-width: 0;
-  justify-items: center;
-  gap: 2px;
-  padding: 8px 5px;
-  border: 1px solid rgba(244, 211, 114, 0.18);
-  border-radius: 7px;
-  color: #f7db87;
-  background: rgba(247, 219, 135, 0.07);
-  text-align: center;
-}
-
-.reward-meaning b {
-  color: #f6f3e8;
-  font-size: 0.72rem;
-}
-
-.reward-meaning small {
-  overflow: hidden;
-  color: #aebeb6;
-  font-size: 0.62rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .gratitude-row--waiting {

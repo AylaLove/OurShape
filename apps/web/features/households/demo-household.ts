@@ -14,7 +14,7 @@ export const DEMO_HOUSEHOLD: Household = {
       initials: "A",
       role: "adult",
       colour: "#ee6c58",
-      pointLabel: "Chill Points",
+      pointLabel: "High Fives",
       contributionTarget: 10,
     },
     {
@@ -24,7 +24,7 @@ export const DEMO_HOUSEHOLD: Household = {
       initials: "R",
       role: "adult",
       colour: "#2b78a0",
-      pointLabel: "Chill Points",
+      pointLabel: "High Fives",
       contributionTarget: 10,
     },
     {
@@ -34,7 +34,7 @@ export const DEMO_HOUSEHOLD: Household = {
       initials: "S",
       role: "child",
       colour: "#e4a72e",
-      pointLabel: "Watch Points",
+      pointLabel: "High Fives",
       contributionTarget: 4,
     },
   ],

@@ -21,9 +21,9 @@ function fixture(): GameState {
       quietHoursStart: "20:00",
       quietHoursEnd: "07:00",
       members: [
-        { id: "adult-a", householdId, displayName: "Adult A", initials: "A", role: "adult", colour: "#ef6d5b", pointLabel: "Chill Points", contributionTarget: 10 },
-        { id: "adult-b", householdId, displayName: "Adult B", initials: "B", role: "adult", colour: "#3c7f9d", pointLabel: "Chill Points", contributionTarget: 10 },
-        { id: "child", householdId, displayName: "Child", initials: "C", role: "child", colour: "#e2aa37", pointLabel: "Watch Points", contributionTarget: 4 },
+        { id: "adult-a", householdId, displayName: "Adult A", initials: "A", role: "adult", colour: "#ef6d5b", pointLabel: "High Fives", contributionTarget: 10 },
+        { id: "adult-b", householdId, displayName: "Adult B", initials: "B", role: "adult", colour: "#3c7f9d", pointLabel: "High Fives", contributionTarget: 10 },
+        { id: "child", householdId, displayName: "Child", initials: "C", role: "child", colour: "#e2aa37", pointLabel: "High Fives", contributionTarget: 4 },
       ],
     },
     quests: [{

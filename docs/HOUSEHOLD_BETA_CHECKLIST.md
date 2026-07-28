@@ -24,7 +24,7 @@
 ## Child check
 
 - Sage can complete the main flow from icons and spoken instructions.
-- The child profile sees Watch Points and child-safe rewards only.
+- The child profile sees High Fives and child-safe rewards only.
 - The child sees supportive household language rather than individual balance ratios.
 - Unfinished quests are noticeable but quiet during quiet hours.
 

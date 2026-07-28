@@ -9,7 +9,7 @@ const member: HouseholdMember = {
   initials: "S",
   role: "child",
   colour: "#f5b72e",
-  pointLabel: "Watch Points",
+  pointLabel: "High Fives",
   contributionTarget: 4,
 };
 
