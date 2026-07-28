@@ -1,12 +1,13 @@
 "use client";
 
 import { balancePolygonPoints, regularPolygonPoints, type DailyPlan, type DailyQuest, type Household, type HouseholdMember, type MemberBalance } from "@family-game/domain";
-import { Film, Sparkles } from "lucide-react";
+import { Gauge, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useState } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { dinosaurMessage, type HomeDinosaurState } from "@/features/companion/companion-state";
 import { homeGoalProgress, type HomeGoal } from "@/features/energy/home-goal";
+import { moonPhaseForDate } from "@/features/rhythms/moon-phase";
 
 function hexToHsl(hex: string) {
   const value = hex.replace("#", "");
@@ -69,6 +70,11 @@ export function HouseholdShape({
   const livePoints = balancePolygonPoints(balances);
   const pendingEnergy = quests.filter((quest) => quest.state === "pending_endorsement").length;
   const goalProgress = homeGoalProgress(homeGoal, homeEnergy);
+  const activePlan = dailyPlans.find((plan) => plan.memberId === activeMember.id);
+  const moonPhase = moonPhaseForDate(new Date());
+  const capacityLabel = activePlan
+    ? activePlan.capacity.charAt(0).toUpperCase() + activePlan.capacity.slice(1)
+    : "Set";
   const path = livePoints.map((point) => `${point.x},${point.y}`).join(" ");
   const basePath = basePoints.map((point) => `${point.x},${point.y}`).join(" ");
   const relationshipColours = household.members.map((member, index) => (
@@ -86,17 +92,34 @@ export function HouseholdShape({
           <h2 id="shape-title">{childView ? "Our Shape" : "Our home today"}</h2>
           {childView ? <p className="shape__promise">Every side matters. We find our balance together.</p> : null}
         </div>
-        {childView ? (
-          <div className={goalProgress.unlocked ? "shape__energy-goal shape__energy-goal--unlocked" : "shape__energy-goal"} aria-label={`${goalProgress.current} of ${goalProgress.target} Home Energy toward ${homeGoal.title}`}>
-            <div className="shape__energy-goal-top">
-              <span><Sparkles size={13} aria-hidden="true" /> Home Energy</span>
-              <strong>{goalProgress.current}/{goalProgress.target}</strong>
-            </div>
-            <span className="shape__energy-track" aria-hidden="true"><i style={{ width: `${goalProgress.percentage}%` }} /></span>
-            <span className="shape__energy-reward"><Film size={13} aria-hidden="true" /> {goalProgress.unlocked ? "Movie night unlocked" : homeGoal.title}</span>
-          </div>
-        ) : <span className="shape__status"><Sparkles size={13} /> {homeEnergy} Home Energy</span>}
+        {childView ? null : <span className="shape__status"><Sparkles size={13} /> {homeEnergy} Home Energy</span>}
       </div>
+
+      {childView ? (
+        <div className="shape__status-corner" aria-label="Today's home status">
+          <button
+            className="shape-status-widget"
+            type="button"
+            onClick={() => onSelectMember?.(activeMember)}
+            aria-label={`${activeMember.displayName}'s capacity is ${capacityLabel}. Open profile.`}
+          >
+            <Gauge size={15} aria-hidden="true" />
+            <span><small>Capacity</small><strong>{capacityLabel}</strong></span>
+          </button>
+          <div className="shape-status-widget" aria-label={`${moonPhase.name}, ${moonPhase.illumination}% illuminated`}>
+            <span className="shape-status-widget__moon" aria-hidden="true">{moonPhase.symbol}</span>
+            <span><small>Moon</small><strong>{moonPhase.name.replace(" moon", "")}</strong></span>
+          </div>
+          <div
+            className={goalProgress.unlocked ? "shape-status-widget shape-status-widget--energy shape-status-widget--unlocked" : "shape-status-widget shape-status-widget--energy"}
+            aria-label={`${goalProgress.current} of ${goalProgress.target} Home Energy toward ${homeGoal.title}`}
+          >
+            <Sparkles size={15} aria-hidden="true" />
+            <span><small>Energy</small><strong>{goalProgress.current}/{goalProgress.target}</strong></span>
+            <i aria-hidden="true" style={{ "--energy-progress": `${goalProgress.percentage}%` } as CSSProperties} />
+          </div>
+        </div>
+      ) : null}
 
       <div className="shape__stage">
         <div
