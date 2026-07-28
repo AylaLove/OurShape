@@ -26,7 +26,7 @@ export function openingCheckInItems(state: GameState, member: HouseholdMember): 
 
   if (thanksCount) items.push({
     id: "thanks",
-    label: "Needs your thanks",
+    label: "Thanks waiting",
     value: String(thanksCount),
     destination: "thanks",
   });

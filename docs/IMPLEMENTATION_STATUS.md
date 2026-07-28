@@ -16,7 +16,7 @@ The child profile uses simpler language, spoken quest instructions, large contro
 The child Home now uses the living household shape as the primary game surface:
 
 - the triangle, household members, Home Energy, and dinosaur communicate household state;
-- a compact, dismissible opening check-in shows only relevant points, thanks, Repair, or affordable Treasure;
+- a compact modal check-in briefly shows only relevant points, thanks, Repair, or affordable Treasure without shrinking Home;
 - `How can I help?` is the dominant action and offers at most three relevant choices;
 - recommendations prioritise the active member's Repair Mission, already-joined work, suggested work, then open shared work;
 - tapping a family member opens a simple profile with personal points and recent high fives;
@@ -24,6 +24,7 @@ The child Home now uses the living household shape as the primary game surface:
 - all task selection lives on the separate `Quests` screen;
 - demo and management information are removed from the ordinary child screen;
 - child navigation is `Home`, `Quests`, `Thanks`, and `Treasure`.
+- after the update modal closes, permanent Home is reduced to the family shape and the anchored `How can I help?` action.
 
 The child experience is now divided into distinct app screens instead of one continuous
 page:

@@ -319,18 +319,32 @@
   }
 }
 
+.opening-check-in-backdrop {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  background: rgba(4, 12, 9, 0.76);
+  backdrop-filter: blur(10px);
+  animation: check-in-backdrop-in 180ms ease-out;
+}
+
 .opening-check-in {
   position: relative;
-  z-index: 10;
   display: grid;
-  gap: 10px;
-  margin-bottom: 9px;
-  padding: 12px;
-  border: 1px solid rgba(242, 209, 104, 0.28);
+  width: min(420px, 100%);
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid rgba(242, 209, 104, 0.34);
   border-radius: 8px;
   color: #f7f4e9;
-  background: #161e19;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(104, 220, 169, 0.12), transparent 42%),
+    #111d18;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.58);
+  animation: check-in-panel-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .opening-check-in__heading {
@@ -346,8 +360,8 @@
 }
 
 .opening-check-in__heading h2 {
-  margin-top: 2px;
-  font-size: 1rem;
+  margin-top: 4px;
+  font-size: 1.28rem;
 }
 
 .opening-check-in__heading > button {
@@ -364,8 +378,8 @@
 
 .opening-check-in__items {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
-  gap: 7px;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  gap: 8px;
 }
 
 .opening-check-in__items button {
@@ -374,7 +388,8 @@
   grid-template-columns: 26px minmax(0, 1fr);
   align-items: center;
   gap: 7px;
-  padding: 8px;
+  min-height: 62px;
+  padding: 10px;
   border: 1px solid rgba(112, 219, 172, 0.18);
   border-radius: 7px;
   color: #eaf8f1;
@@ -402,6 +417,33 @@
   font-size: 0.68rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.opening-check-in__continue {
+  min-height: 48px;
+  border: 0;
+  border-radius: 7px;
+  color: #10271f;
+  background: #7be2b4;
+  font-size: 0.94rem;
+  font-weight: 850;
+}
+
+@keyframes check-in-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes check-in-panel-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening-check-in-backdrop,
+  .opening-check-in {
+    animation: none;
+  }
 }
 
 .profile-sheet {
@@ -511,9 +553,9 @@
   position: relative;
   z-index: 2;
   width: min(680px, calc(100% - 28px));
-  min-height: 82px;
-  margin: 14px auto 4px;
-  padding: 13px 18px;
+  min-height: 72px;
+  margin: 0 auto 2px;
+  padding: 10px 16px;
   display: grid;
   grid-template-columns: 48px 1fr;
   grid-template-rows: auto auto;
@@ -531,8 +573,8 @@
   grid-row: 1 / span 2;
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   color: #f8d778;
   background: #12362b;
   border-radius: 50%;

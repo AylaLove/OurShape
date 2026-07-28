@@ -39,13 +39,12 @@ export function TodayView({
   if (activeMember.role === "child") {
     return (
       <section className="child-home-screen" aria-label="Home">
-        <section className="welcome-strip welcome-strip--child" aria-label="Household encouragement"><Sparkles size={18} aria-hidden="true" /><p>{message}</p></section>
+        {shape}
         <button className="help-primary-action" type="button" onClick={onHelp}>
           <span><HandHeart size={28} /></span>
           <strong>How can I help?</strong>
-          <small>Find one thing our home needs</small>
+          <small>Choose one way to join in</small>
         </button>
-        {shape}
       </section>
     );
   }

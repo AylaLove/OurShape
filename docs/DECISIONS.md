@@ -25,3 +25,4 @@
 | D-021 | Keep Help as an internal focused screen | It is a moment in the cooperation loop, not another permanent bottom-navigation destination | Accepted |
 | D-022 | Keep high fives, personal points, and Home Energy separate | Social acknowledgement, spendable reward, and shared household progress have different meanings and must not silently alter one another | Accepted |
 | D-023 | Derive check-ins and profiles from existing state | Status views should explain the current source of truth, not create another store or progress system | Accepted |
+| D-024 | Present opening updates as a modal, then keep Home visually quiet | Status should briefly orient the active person without shrinking or cluttering the family shape; permanent Home contains the shape and one primary help action | Accepted |
