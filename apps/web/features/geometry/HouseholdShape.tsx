@@ -6,7 +6,7 @@ import type { CSSProperties } from "react";
 import { useState } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { dinosaurMessage, type HomeDinosaurState } from "@/features/companion/companion-state";
-import { homeGoalProgress, type HomeGoal } from "@/features/energy/home-goal";
+import type { HomeGoal } from "@/features/energy/home-goal";
 import { moonPhaseForDate } from "@/features/rhythms/moon-phase";
 
 function hexToHsl(hex: string) {
@@ -69,7 +69,6 @@ export function HouseholdShape({
   const basePoints = regularPolygonPoints(household.members.length);
   const livePoints = balancePolygonPoints(balances);
   const pendingEnergy = quests.filter((quest) => quest.state === "pending_endorsement").length;
-  const goalProgress = homeGoalProgress(homeGoal, homeEnergy);
   const activePlan = dailyPlans.find((plan) => plan.memberId === activeMember.id);
   const moonPhase = moonPhaseForDate(new Date());
   const capacityLabel = activePlan
@@ -82,7 +81,7 @@ export function HouseholdShape({
   ));
   const spectrum = household.members.flatMap((member, index) => [member.colour, relationshipColours[index]]);
   const spectrumBackground = `radial-gradient(circle, rgba(255,255,255,0.24), transparent 30%), conic-gradient(from -90deg, ${spectrum.join(", ")}, ${spectrum[0]})`;
-  const energyStrength = goalProgress.percentage / 100;
+  const energyStrength = Math.min(1, homeEnergy / Math.max(1, homeGoal.targetEnergy));
 
   return (
     <section className={childView ? "shape shape--child" : "shape"} aria-labelledby="shape-title">
@@ -110,13 +109,9 @@ export function HouseholdShape({
             <span className="shape-status-widget__moon" aria-hidden="true">{moonPhase.symbol}</span>
             <span><small>Moon</small><strong>{moonPhase.name.replace(" moon", "")}</strong></span>
           </div>
-          <div
-            className={goalProgress.unlocked ? "shape-status-widget shape-status-widget--energy shape-status-widget--unlocked" : "shape-status-widget shape-status-widget--energy"}
-            aria-label={`${goalProgress.current} of ${goalProgress.target} Home Energy toward ${homeGoal.title}`}
-          >
+          <div className="shape-status-widget shape-status-widget--energy" aria-label={`${homeEnergy} Home Energy`}>
             <Sparkles size={15} aria-hidden="true" />
-            <span><small>Energy</small><strong>{goalProgress.current}/{goalProgress.target}</strong></span>
-            <i aria-hidden="true" style={{ "--energy-progress": `${goalProgress.percentage}%` } as CSSProperties} />
+            <span><small>Energy</small><strong>{homeEnergy}</strong></span>
           </div>
         </div>
       ) : null}
