@@ -56,18 +56,26 @@ export function HomeDinosaur({
   state,
   size = "large",
   priority = false,
+  character = "home-dinosaur",
 }: {
   state: HomeDinosaurState;
   size?: "small" | "medium" | "large";
   priority?: boolean;
+  character?: "home-dinosaur" | "sage-trex";
 }) {
   const pose = POSES[state];
+  const image = character === "sage-trex"
+    ? {
+        file: "/companion/sage-trex-neutral-v1.png",
+        alt: "Sage's friendly T-Rex helper",
+      }
+    : pose;
 
   return (
-    <span className={`home-dinosaur home-dinosaur--${size} home-dinosaur--${state}`}>
+    <span className={`home-dinosaur home-dinosaur--${size} home-dinosaur--${state} home-dinosaur--${character}`}>
       <Image
-        src={pose.file}
-        alt={pose.alt}
+        src={image.file}
+        alt={image.alt}
         width={444}
         height={444}
         sizes={size === "large" ? "(max-width: 760px) 42vw, 290px" : "150px"}

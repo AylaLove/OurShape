@@ -1,13 +1,12 @@
 "use client";
 
 import { balancePolygonPoints, regularPolygonPoints, type DailyPlan, type DailyQuest, type Household, type HouseholdMember, type MemberBalance } from "@family-game/domain";
-import { Gauge, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useState } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { dinosaurMessage, type HomeDinosaurState } from "@/features/companion/companion-state";
 import type { HomeGoal } from "@/features/energy/home-goal";
-import { moonPhaseForDate } from "@/features/rhythms/moon-phase";
 
 function hexToHsl(hex: string) {
   const value = hex.replace("#", "");
@@ -69,11 +68,6 @@ export function HouseholdShape({
   const basePoints = regularPolygonPoints(household.members.length);
   const livePoints = balancePolygonPoints(balances);
   const pendingEnergy = quests.filter((quest) => quest.state === "pending_endorsement").length;
-  const activePlan = dailyPlans.find((plan) => plan.memberId === activeMember.id);
-  const moonPhase = moonPhaseForDate(new Date());
-  const capacityLabel = activePlan
-    ? activePlan.capacity.charAt(0).toUpperCase() + activePlan.capacity.slice(1)
-    : "Set";
   const path = livePoints.map((point) => `${point.x},${point.y}`).join(" ");
   const basePath = basePoints.map((point) => `${point.x},${point.y}`).join(" ");
   const relationshipColours = household.members.map((member, index) => (
@@ -88,33 +82,11 @@ export function HouseholdShape({
       <div className="shape__heading">
         <div>
           {childView ? null : <p className="eyebrow">OUR SHAPE</p>}
-          <h2 id="shape-title">{childView ? "Our Shape" : "Our home today"}</h2>
-          {childView ? <p className="shape__promise">Every side matters. We find our balance together.</p> : null}
+          <h2 id="shape-title">{childView ? "OUR SHAPE" : "Our home today"}</h2>
+          {childView ? <p className="shape__promise">Every side helps. Together, we find our balance.</p> : null}
         </div>
         {childView ? null : <span className="shape__status"><Sparkles size={13} /> {homeEnergy} Home Energy</span>}
       </div>
-
-      {childView ? (
-        <div className="shape__status-corner" aria-label="Today's home status">
-          <button
-            className="shape-status-widget"
-            type="button"
-            onClick={() => onSelectMember?.(activeMember)}
-            aria-label={`${activeMember.displayName}'s capacity is ${capacityLabel}. Open profile.`}
-          >
-            <Gauge size={15} aria-hidden="true" />
-            <span><small>Capacity</small><strong>{capacityLabel}</strong></span>
-          </button>
-          <div className="shape-status-widget" aria-label={`${moonPhase.name}, ${moonPhase.illumination}% illuminated`}>
-            <span className="shape-status-widget__moon" aria-hidden="true">{moonPhase.symbol}</span>
-            <span><small>Moon</small><strong>{moonPhase.name.replace(" moon", "")}</strong></span>
-          </div>
-          <div className="shape-status-widget shape-status-widget--energy" aria-label={`${homeEnergy} Home Energy`}>
-            <Sparkles size={15} aria-hidden="true" />
-            <span><small>Energy</small><strong>{homeEnergy}</strong></span>
-          </div>
-        </div>
-      ) : null}
 
       <div className="shape__stage">
         <div
@@ -178,7 +150,7 @@ export function HouseholdShape({
               aria-expanded={dinosaurSpeaking}
               onClick={() => setDinosaurSpeaking((speaking) => !speaking)}
             >
-              <HomeDinosaur state={dinosaurState} size="large" priority />
+              <HomeDinosaur state={dinosaurState} size="large" priority character="sage-trex" />
             </button>
           ) : <HomeDinosaur state={dinosaurState} size="medium" priority />}
         </div>

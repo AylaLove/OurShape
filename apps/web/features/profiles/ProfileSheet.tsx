@@ -1,8 +1,10 @@
 "use client";
 
-import { Gauge, Hand, ListChecks, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { Gauge, Hand, ListChecks, Moon, Sparkles, Volume2, VolumeX, X } from "lucide-react";
 import { pointBalance, todayPlan, type DailyCapacity, type GameState, type HouseholdMember } from "@family-game/domain";
 import type { CSSProperties } from "react";
+import { homeEnergy } from "@/features/companion/companion-state";
+import { moonPhaseForDate } from "@/features/rhythms/moon-phase";
 
 export function ProfileSheet({
   state,
@@ -29,6 +31,8 @@ export function ProfileSheet({
     .reverse();
   const balance = pointBalance(state, member.id);
   const plan = todayPlan(state, member.id, today);
+  const energy = homeEnergy(state);
+  const moon = moonPhaseForDate(new Date());
   const intentions = state.quests.filter((quest) => plan?.intentionQuestIds.includes(quest.id));
   const capacityLabels: Record<DailyCapacity, string> = { rest: "Rest", gentle: "Gentle", steady: "Steady", plenty: "Plenty" };
   const supportLabel = plan?.capacityContext === "menstrual_support"
@@ -56,6 +60,10 @@ export function ProfileSheet({
             </>
           ) : <p>No capacity or intentions set yet.</p>}
           {activeMember.id === member.id ? <button className="profile-sheet__plan-button" type="button" onClick={onEditDailyPlan}>{plan ? "Adjust today’s plan" : "Set today’s plan"}</button> : null}
+        </div>
+        <div className="profile-sheet__pulse" aria-label="Shared home rhythm">
+          <span><Sparkles size={17} /><strong>{energy}</strong><small>Home Energy</small></span>
+          <span><Moon size={17} /><strong>{moon.symbol}</strong><small>{moon.name}</small></span>
         </div>
         <div className="profile-sheet__section">
           <h3><Hand size={18} /> High Fives earned</h3>

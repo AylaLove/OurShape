@@ -45,7 +45,6 @@ export function TodayView({
         <button className="help-primary-action" type="button" onClick={onHelp}>
           <span><HandHeart size={28} /></span>
           <strong>How can I help?</strong>
-          <small>Choose one way to join in</small>
         </button>
       </section>
     );
@@ -65,7 +64,6 @@ export function TodayView({
       <button className="help-primary-action help-primary-action--adult" type="button" onClick={onHelp}>
         <span><HandHeart size={25} /></span>
         <strong>How can I help?</strong>
-        <small>Start with today’s intentions</small>
       </button>
       {questList}
     </>
