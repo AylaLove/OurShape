@@ -161,7 +161,7 @@ export function GameShell() {
       <header className={activeMember.role === "child" ? "topbar topbar--child" : "topbar"}>
         <div>
           {activeMember.role === "adult" ? <p className="eyebrow">{new Intl.DateTimeFormat("en", { weekday: "long", day: "numeric", month: "long" }).format(new Date()).toUpperCase()}</p> : null}
-          <h1>{state.household.name}</h1>
+          <h1>{activeMember.role === "child" ? "How Can I Help?" : state.household.name}</h1>
         </div>
         <div className="topbar__actions">
           {activeMember.role === "child" && !databaseReady ? (

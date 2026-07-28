@@ -124,6 +124,13 @@ Mobile QA currently covers fixed 375 x 667 and 414 x 896 frames. The child Home 
 horizontal overflow, does not require page scrolling, and no longer places task controls
 over the dinosaur or household shape at either size.
 
+The child Home now uses a deliberate colour grammar:
+
+- each person keeps a primary identity colour;
+- each side joining two people uses the secondary colour created by that relationship;
+- verified Home Energy gradually reveals the combined spectrum in the shared centre;
+- colour shows connection and collective energy, never individual rank or blame.
+
 The short-increment usability roadmap is complete in three public checkpoints. Automated
 coverage currently passes 29 tests alongside TypeScript, schema-contract, project-health,
 and production-build checks.

@@ -5,7 +5,7 @@ import "./game.css";
 import "./views.css";
 
 export const metadata: Metadata = {
-  title: "Our Shape",
+  title: "How Can I Help?",
   description: "A visual daily household participation game.",
   applicationName: "Family Participation Game",
   manifest: "/manifest.webmanifest",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Our Shape",
+    title: "How Can I Help?",
   },
 };
 

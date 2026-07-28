@@ -4,8 +4,8 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Family Participation Game",
-    short_name: "Our Shape",
+    name: "How Can I Help?",
+    short_name: "How Can I Help?",
     description: "A shared daily household participation game.",
     start_url: "/",
     display: "standalone",
