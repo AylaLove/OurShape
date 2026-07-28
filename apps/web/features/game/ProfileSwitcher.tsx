@@ -1,6 +1,7 @@
 import type { HouseholdMember } from "@family-game/domain";
 import { ChevronDown } from "lucide-react";
 import type { CSSProperties } from "react";
+import { MemberMark } from "@/features/profiles/MemberMark";
 
 export function ProfileSwitcher({
   members,
@@ -18,7 +19,9 @@ export function ProfileSwitcher({
   return (
     <label className={compact ? "profile-switcher profile-switcher--compact" : "profile-switcher"} aria-label={compact && points !== undefined ? `${activeMember.displayName}, ${points} ${activeMember.pointLabel}` : undefined}>
       <span className="sr-only">Playing as</span>
-      <span className="profile-switcher__avatar" style={{ "--member-colour": activeMember.colour } as CSSProperties}>{activeMember.initials}</span>
+      <span className="profile-switcher__avatar" style={{ "--member-colour": activeMember.colour } as CSSProperties}>
+        <MemberMark symbol={activeMember.symbol} initials={activeMember.initials} size={compact ? 17 : 16} />
+      </span>
       {compact && points !== undefined ? <span className="profile-switcher__points" aria-hidden="true">{points}</span> : null}
       <select value={activeMember.id} onChange={(event) => onChange(event.target.value)} aria-label="Playing as">
         {members.map((member) => <option key={member.id} value={member.id}>{member.displayName}</option>)}

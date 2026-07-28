@@ -3,6 +3,7 @@
 import { balancePolygonPoints, regularPolygonPoints, type DailyPlan, type DailyQuest, type Household, type HouseholdMember, type MemberBalance } from "@family-game/domain";
 import { Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
+import { MemberMark } from "@/features/profiles/MemberMark";
 import { useState } from "react";
 import { HomeDinosaur } from "@/features/companion/HomeDinosaur";
 import { dinosaurMessage, type HomeDinosaurState } from "@/features/companion/companion-state";
@@ -81,9 +82,9 @@ export function HouseholdShape({
     <section className={childView ? "shape shape--child" : "shape"} aria-labelledby="shape-title">
       <div className="shape__heading">
         <div>
-          {childView ? null : <p className="eyebrow">OUR SHAPE</p>}
-          <h2 id="shape-title">{childView ? "OUR SHAPE" : "Our home today"}</h2>
-          {childView ? <p className="shape__promise">Every side helps. Together, we find our balance.</p> : null}
+          <p className="eyebrow">OUR SHAPE</p>
+          <h2 id="shape-title">{childView ? household.name : "Our home today"}</h2>
+          {childView ? <p className="shape__promise">{household.motto ?? "Every side helps. Together, we find our balance."}</p> : null}
         </div>
         {childView ? null : <span className="shape__status"><Sparkles size={13} /> {homeEnergy} Home Energy</span>}
       </div>
@@ -134,7 +135,7 @@ export function HouseholdShape({
               onClick={() => onSelectMember?.(member)}
               aria-label={`Open ${member.displayName}'s profile`}
             >
-              <span className="shape-member__avatar">{member.initials}</span>
+              <span className="shape-member__avatar"><MemberMark symbol={member.symbol} initials={member.initials} size={childView ? 23 : 18} /></span>
               <span className="shape-member__name">{member.displayName}</span>
               {plan ? <small>{plan.capacity}</small> : null}
             </button>

@@ -43,6 +43,10 @@ import { HelpView } from "@/features/help/HelpView";
 import { OpeningCheckIn } from "@/features/check-in/OpeningCheckIn";
 import { ProfileSheet } from "@/features/profiles/ProfileSheet";
 import { DailyPlanSheet } from "@/features/profiles/DailyPlanSheet";
+import {
+  HouseholdIdentitySheet,
+  type HouseholdIdentityInput,
+} from "@/features/households/HouseholdIdentitySheet";
 
 function now() {
   return new Date().toISOString();
@@ -66,6 +70,7 @@ export function GameShell() {
   const [profileMemberId, setProfileMemberId] = useState<string | null>(null);
   const [dailyPlanMemberId, setDailyPlanMemberId] = useState<string | null>(null);
   const [soundOn, setSoundOn] = useState(true);
+  const [identityOpen, setIdentityOpen] = useState(false);
   const activeMember = state.household.members.find((member) => member.id === activeMemberId) ?? state.household.members[0];
   const selectedQuest = useMemo(() => state.quests.find((quest) => quest.id === selectedQuestId) ?? null, [selectedQuestId, state.quests]);
   const waitingCount = state.quests.filter((quest) => quest.state === "pending_endorsement" && !quest.participantIds.includes(activeMember.id)).length;
@@ -141,6 +146,23 @@ export function GameShell() {
     setSelectedQuestId(quest.id);
   }
 
+  function updateHouseholdIdentity(input: HouseholdIdentityInput) {
+    setState((current) => ({
+      ...current,
+      household: {
+        ...current.household,
+        name: input.name,
+        motto: input.motto,
+        members: current.household.members.map((member) => ({
+          ...member,
+          symbol: input.symbols[member.id] ?? member.symbol,
+        })),
+      },
+    }));
+    setIdentityOpen(false);
+    setToast("Your household identity is ready.");
+  }
+
   function thankSelectedQuest(note: string | null) {
     if (!selectedQuest) return;
     const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);
@@ -199,7 +221,7 @@ export function GameShell() {
       {section === "quests" ? <AllQuestsView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onAddRepair={() => setRepairAddOpen(true)} /> : null}
       {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} /> : null}
       {section === "rewards" ? <RewardsView state={state} activeMember={activeMember} onRedeem={(rewardId) => apply(redeemReward(state, rewardId, activeMember.id, now()))} /> : null}
-      {section === "family" ? <FamilyView state={state} activeMember={activeMember} /> : null}
+      {section === "family" ? <FamilyView state={state} activeMember={activeMember} onEditIdentity={() => setIdentityOpen(true)} /> : null}
 
       <AppNav active={section} onChange={setSection} childView={activeMember.role === "child"} />
 
@@ -240,6 +262,7 @@ export function GameShell() {
           setProfileMemberId(dailyPlanMember.id);
         }}
       /> : null}
+      {identityOpen ? <HouseholdIdentitySheet household={state.household} onSave={updateHouseholdIdentity} onClose={() => setIdentityOpen(false)} /> : null}
       {toast ? <div className="toast" role="status">{toast}</div> : null}
     </main>
   );

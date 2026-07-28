@@ -6,6 +6,7 @@ export const DEMO_HOUSEHOLD: Household = {
   timezone: "Africa/Johannesburg",
   quietHoursStart: "20:00",
   quietHoursEnd: "07:00",
+  motto: "Every side helps. Together, we find our balance.",
   members: [
     {
       id: "demo-ayla",
@@ -16,6 +17,7 @@ export const DEMO_HOUSEHOLD: Household = {
       colour: "#ee6c58",
       pointLabel: "High Fives",
       contributionTarget: 10,
+      symbol: "sun",
     },
     {
       id: "demo-partner",
@@ -26,6 +28,7 @@ export const DEMO_HOUSEHOLD: Household = {
       colour: "#2b78a0",
       pointLabel: "High Fives",
       contributionTarget: 10,
+      symbol: "mountain",
     },
     {
       id: "demo-child",
@@ -36,6 +39,7 @@ export const DEMO_HOUSEHOLD: Household = {
       colour: "#e4a72e",
       pointLabel: "High Fives",
       contributionTarget: 4,
+      symbol: "star",
     },
   ],
 };

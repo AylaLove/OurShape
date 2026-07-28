@@ -1,4 +1,5 @@
 export type HouseholdRole = "adult" | "child";
+export type MemberSymbol = "sun" | "moon" | "star" | "leaf" | "flame" | "mountain";
 
 export type QuestKind =
   | "personal"
@@ -38,6 +39,7 @@ export interface HouseholdMember {
   colour: string;
   pointLabel: string;
   contributionTarget: number;
+  symbol?: MemberSymbol;
 }
 
 export interface Household {
@@ -46,6 +48,7 @@ export interface Household {
   timezone: string;
   quietHoursStart: string;
   quietHoursEnd: string;
+  motto?: string;
   members: HouseholdMember[];
 }
 

@@ -5,6 +5,7 @@ import { pointBalance, todayPlan, type DailyCapacity, type GameState, type House
 import type { CSSProperties } from "react";
 import { homeEnergy } from "@/features/companion/companion-state";
 import { moonPhaseForDate } from "@/features/rhythms/moon-phase";
+import { MemberMark } from "./MemberMark";
 
 export function ProfileSheet({
   state,
@@ -47,7 +48,9 @@ export function ProfileSheet({
     <div className="sheet-backdrop" role="presentation" onClick={onClose}>
       <section className="profile-sheet" role="dialog" aria-modal="true" aria-labelledby="profile-sheet-title" onClick={(event) => event.stopPropagation()}>
         <button className="profile-sheet__close" type="button" onClick={onClose} aria-label="Close profile"><X size={20} /></button>
-        <span className="profile-sheet__avatar" style={{ "--member-colour": member.colour } as CSSProperties}>{member.initials}</span>
+        <span className="profile-sheet__avatar" style={{ "--member-colour": member.colour } as CSSProperties}>
+          <MemberMark symbol={member.symbol} initials={member.initials} size={30} />
+        </span>
         <p className="eyebrow">{member.role === "child" ? "HOUSE HELPER" : "FAMILY MEMBER"}</p>
         <h2 id="profile-sheet-title">{member.displayName}</h2>
         <div className="profile-sheet__balance"><Sparkles size={21} /><strong>{balance}</strong><span>{member.pointLabel}</span></div>

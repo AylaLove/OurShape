@@ -1,8 +1,9 @@
 import { contributionBalance, type DailyCapacity, type GameState, type HouseholdMember } from "@family-game/domain";
-import { CalendarCheck, CircleCheck, Gauge, ListChecks, Moon, Scale, ShieldCheck } from "lucide-react";
+import { CalendarCheck, CircleCheck, Gauge, ListChecks, Moon, Pencil, Scale, ShieldCheck } from "lucide-react";
 import type { CSSProperties } from "react";
+import { MemberMark } from "@/features/profiles/MemberMark";
 
-export function FamilyView({ state, activeMember }: { state: GameState; activeMember: HouseholdMember }) {
+export function FamilyView({ state, activeMember, onEditIdentity }: { state: GameState; activeMember: HouseholdMember; onEditIdentity: () => void }) {
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const balances = contributionBalance(state, since);
   const completed = state.quests.filter((quest) => quest.state === "completed").length;
@@ -17,6 +18,7 @@ export function FamilyView({ state, activeMember }: { state: GameState; activeMe
       <header className="view-heading">
         <span className="view-heading__icon view-heading__icon--blue"><CalendarCheck size={25} /></span>
         <div><p className="eyebrow">EVENING REVIEW</p><h1 id="family-title">How the home moved</h1></div>
+        {!childView ? <button className="view-heading__action" type="button" onClick={onEditIdentity}><Pencil size={17} /> Edit our home</button> : null}
       </header>
       <div className="review-summary">
         <span><CircleCheck size={21} /><strong>{completed}</strong> appreciated</span>
@@ -41,7 +43,7 @@ export function FamilyView({ state, activeMember }: { state: GameState; activeMe
                     : null;
               return (
                 <article className="today-plan-card" key={member.id}>
-                  <span className="capacity-row__avatar" style={{ "--member-colour": member.colour } as CSSProperties}>{member.initials}</span>
+                  <span className="capacity-row__avatar" style={{ "--member-colour": member.colour } as CSSProperties}><MemberMark symbol={member.symbol} initials={member.initials} size={17} /></span>
                   <div>
                     <h3>{member.displayName}</h3>
                     <p>{plan ? `${capacityLabels[plan.capacity]} capacity${support ? ` · ${support}` : ""}` : "Not checked in yet"}</p>
@@ -57,7 +59,7 @@ export function FamilyView({ state, activeMember }: { state: GameState; activeMe
               const member = state.household.members.find((candidate) => candidate.id === balance.memberId)!;
               return (
                 <div className="capacity-row" key={member.id}>
-                  <span className="capacity-row__avatar" style={{ "--member-colour": member.colour } as CSSProperties}>{member.initials}</span>
+                  <span className="capacity-row__avatar" style={{ "--member-colour": member.colour } as CSSProperties}><MemberMark symbol={member.symbol} initials={member.initials} size={17} /></span>
                   <div><strong>{member.displayName}</strong><span>{balance.units.toFixed(1)} of {balance.target} agreed units</span></div>
                   <meter min="0" max="1.2" value={Math.min(balance.ratio, 1.2)} aria-label={`${member.displayName} contribution against agreed capacity`} />
                 </div>
