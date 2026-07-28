@@ -1,5 +1,5 @@
-import { contributionBalance, type GameState, type HouseholdMember } from "@family-game/domain";
-import { CalendarCheck, CircleCheck, Moon, Scale, ShieldCheck } from "lucide-react";
+import { contributionBalance, type DailyCapacity, type GameState, type HouseholdMember } from "@family-game/domain";
+import { CalendarCheck, CircleCheck, Gauge, ListChecks, Moon, Scale, ShieldCheck } from "lucide-react";
 import type { CSSProperties } from "react";
 
 export function FamilyView({ state, activeMember }: { state: GameState; activeMember: HouseholdMember }) {
@@ -8,6 +8,9 @@ export function FamilyView({ state, activeMember }: { state: GameState; activeMe
   const completed = state.quests.filter((quest) => quest.state === "completed").length;
   const unfinished = state.quests.filter((quest) => ["needed", "active", "pending_endorsement"].includes(quest.state)).length;
   const childView = activeMember.role === "child";
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: state.household.timezone }).format(new Date());
+  const plans = (state.dailyPlans ?? []).filter((plan) => plan.date === today);
+  const capacityLabels: Record<DailyCapacity, string> = { rest: "Rest", gentle: "Gentle", steady: "Steady", plenty: "Plenty" };
 
   return (
     <section className="view-section" aria-labelledby="family-title">
@@ -24,6 +27,30 @@ export function FamilyView({ state, activeMember }: { state: GameState; activeMe
         <div className="child-balance"><ShieldCheck size={27} /><div><h2>Our team is taking care of home</h2><p>Every helpful action makes the shape stronger. No one has to do the same amount.</p></div></div>
       ) : (
         <>
+          <div className="subsection-heading"><h2>Today’s capacity and intentions</h2><Gauge size={19} /></div>
+          <div className="today-plans">
+            {state.household.members.map((member) => {
+              const plan = plans.find((candidate) => candidate.memberId === member.id);
+              const intentions = state.quests.filter((quest) => plan?.intentionQuestIds.includes(quest.id));
+              const support = plan?.capacityContext === "menstrual_support"
+                ? "Menstrual support welcome"
+                : plan?.capacityContext === "luteal_support"
+                  ? "Luteal support welcome"
+                  : plan?.capacityContext === "cycle_support"
+                    ? "Cycle support welcome"
+                    : null;
+              return (
+                <article className="today-plan-card" key={member.id}>
+                  <span className="capacity-row__avatar" style={{ "--member-colour": member.colour } as CSSProperties}>{member.initials}</span>
+                  <div>
+                    <h3>{member.displayName}</h3>
+                    <p>{plan ? `${capacityLabels[plan.capacity]} capacity${support ? ` · ${support}` : ""}` : "Not checked in yet"}</p>
+                    {intentions.length ? <small><ListChecks size={14} /> {intentions.map((quest) => quest.title).join(" · ")}</small> : null}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
           <div className="subsection-heading"><h2>Seven-day capacity view</h2><Scale size={19} /></div>
           <div className="capacity-list">
             {balances.map((balance) => {

@@ -1,4 +1,4 @@
-import type { DailyQuest, GameState, HouseholdMember } from "@family-game/domain";
+import { todayPlan, type DailyQuest, type GameState, type HouseholdMember } from "@family-game/domain";
 import { BookOpen, Flower2, HeartHandshake, Home, ListTodo, Shirt, Sparkles, Trees, UserRound, UsersRound, Utensils } from "lucide-react";
 import type { CSSProperties } from "react";
 import { recommendHelp, type HelpMode } from "./help-recommendations";
@@ -21,14 +21,16 @@ export function HelpView({
   onSelectQuest: (quest: DailyQuest) => void;
   onShowAll: () => void;
 }) {
-  const recommendations = recommendHelp(state.quests, activeMember);
+  const date = new Intl.DateTimeFormat("en-CA", { timeZone: state.household.timezone }).format(new Date());
+  const plan = todayPlan(state, activeMember.id, date);
+  const recommendations = recommendHelp(state.quests, activeMember, 3, plan?.intentionQuestIds ?? []);
 
   return (
     <section className="help-view" aria-labelledby="help-title">
       <header className="help-view__heading">
         <p className="eyebrow">FOR {activeMember.displayName.toUpperCase()}</p>
         <h1 id="help-title">How can I help?</h1>
-        <p>Choose one small way to help our home.</p>
+        <p>{plan?.intentionQuestIds.length ? "Your intentions come first. Choose one small way to begin." : "Choose one small way to help our home."}</p>
       </header>
 
       <div className="help-choices">

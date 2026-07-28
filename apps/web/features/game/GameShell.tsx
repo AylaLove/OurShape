@@ -9,7 +9,10 @@ import {
   pointBalance,
   redeemReward,
   sendHighFive,
+  setDailyPlan,
+  todayPlan,
   type DailyQuest,
+  type DailyPlan,
   type DomainResult,
 } from "@family-game/domain";
 import { AppNav, type AppScreen } from "@/components/AppNav";
@@ -36,6 +39,7 @@ import { GratitudeMoment, type GratitudeMomentData } from "@/features/gratitude/
 import { HelpView } from "@/features/help/HelpView";
 import { OpeningCheckIn } from "@/features/check-in/OpeningCheckIn";
 import { ProfileSheet } from "@/features/profiles/ProfileSheet";
+import { DailyPlanSheet } from "@/features/profiles/DailyPlanSheet";
 
 function now() {
   return new Date().toISOString();
@@ -56,6 +60,7 @@ export function GameShell() {
   const [gratitudeMoment, setGratitudeMoment] = useState<GratitudeMomentData | null>(null);
   const [checkInOpen, setCheckInOpen] = useState(true);
   const [profileMemberId, setProfileMemberId] = useState<string | null>(null);
+  const [dailyPlanMemberId, setDailyPlanMemberId] = useState<string | null>(null);
   const [soundOn, setSoundOn] = useState(true);
   const activeMember = state.household.members.find((member) => member.id === activeMemberId) ?? state.household.members[0];
   const selectedQuest = useMemo(() => state.quests.find((quest) => quest.id === selectedQuestId) ?? null, [selectedQuestId, state.quests]);
@@ -69,6 +74,8 @@ export function GameShell() {
   const energy = homeEnergy(state);
   const personalPoints = pointBalance(state, activeMember.id);
   const profileMember = state.household.members.find((member) => member.id === profileMemberId) ?? null;
+  const dailyPlanMember = state.household.members.find((member) => member.id === dailyPlanMemberId) ?? null;
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: state.household.timezone }).format(clientTime ?? HYDRATION_SAFE_DAYTIME);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -216,7 +223,22 @@ export function GameShell() {
         setRepairAddOpen(false);
       }} /> : null}
       {gratitudeMoment ? <GratitudeMoment moment={gratitudeMoment} onClose={() => setGratitudeMoment(null)} /> : null}
-      {profileMember ? <ProfileSheet state={state} member={profileMember} soundOn={soundOn} onToggleSound={() => setSoundOn((value) => !value)} onClose={() => setProfileMemberId(null)} /> : null}
+      {profileMember ? <ProfileSheet state={state} member={profileMember} activeMember={activeMember} today={today} soundOn={soundOn} onToggleSound={() => setSoundOn((value) => !value)} onEditDailyPlan={() => {
+        setProfileMemberId(null);
+        setDailyPlanMemberId(profileMember.id);
+      }} onClose={() => setProfileMemberId(null)} /> : null}
+      {dailyPlanMember ? <DailyPlanSheet
+        member={dailyPlanMember}
+        quests={state.quests}
+        plan={todayPlan(state, dailyPlanMember.id, today)}
+        today={today}
+        onClose={() => setDailyPlanMemberId(null)}
+        onSave={(input: Pick<DailyPlan, "capacity" | "capacityContext" | "intentionQuestIds">) => {
+          apply(setDailyPlan(state, input, dailyPlanMember.id, now()));
+          setDailyPlanMemberId(null);
+          setProfileMemberId(dailyPlanMember.id);
+        }}
+      /> : null}
       {toast ? <div className="toast" role="status">{toast}</div> : null}
     </main>
   );

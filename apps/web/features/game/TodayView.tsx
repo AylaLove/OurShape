@@ -29,11 +29,13 @@ export function TodayView({
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const balances = contributionBalance(state, since);
   const outstanding = state.quests.filter((quest) => !["completed", "cancelled"].includes(quest.state));
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: state.household.timezone }).format(new Date());
+  const dailyPlans = (state.dailyPlans ?? []).filter((plan) => plan.date === today);
   const message = activeMember.role === "child"
     ? "We help, we notice, and our home grows stronger."
     : `${outstanding.length} household needs are open. Join one alone or do one together.`;
   const shape = (
-    <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={homeEnergy} homeGoal={homeGoal} childView={activeMember.role === "child"} onSelectMember={onSelectMember} />
+    <HouseholdShape household={state.household} quests={state.quests} balances={balances} activeMember={activeMember} dinosaurState={dinosaurState} homeEnergy={homeEnergy} homeGoal={homeGoal} dailyPlans={dailyPlans} childView={activeMember.role === "child"} onSelectMember={onSelectMember} />
   );
 
   if (activeMember.role === "child") {
@@ -60,6 +62,11 @@ export function TodayView({
     <>
       <section className="welcome-strip" aria-label="Household encouragement"><Sparkles size={18} aria-hidden="true" /><p>{message}</p></section>
       {shape}
+      <button className="help-primary-action help-primary-action--adult" type="button" onClick={onHelp}>
+        <span><HandHeart size={25} /></span>
+        <strong>How can I help?</strong>
+        <small>Start with today’s intentions</small>
+      </button>
       {questList}
     </>
   );

@@ -118,6 +118,17 @@ The dinosaur represents the household as a whole. It may never become hungry, si
 
 Verified completion creates non-spendable Home Energy. Home Energy belongs to the household, visually strengthens the polygon and companion habitat, and remains separate from personal appreciation points. It never decreases as punishment.
 
+## Daily Capacity And Intentions
+
+Each member can make one daily check-in that answers two different questions:
+
+- `Capacity`: how much can I honestly carry today?
+- `Intentions`: which zero to three open quests do I currently intend to help with?
+
+Capacity uses four plain states: `rest`, `gentle`, `steady`, and `plenty`. It provides context and may improve recommendations, but it is not a score, excuse, diagnosis, or promise. Intentions guide `How can I help?` without automatically joining or completing a quest.
+
+Sensitive health dates are private to the person who enters them. An adult may explicitly share a simple cycle-support cue with the household. The private date itself is never included in the shared household snapshot. A cycle estimate never changes capacity automatically. Moon phase is displayed separately as an optional visual rhythm and is not represented as causing physical or emotional states.
+
 ## Child experience
 
 The child profile is parent-managed and does not require an email address. The child must be able to:

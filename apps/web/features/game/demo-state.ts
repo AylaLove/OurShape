@@ -79,6 +79,7 @@ export function createDemoState(): GameState {
     ],
     redemptions: [],
     highFives: [],
+    dailyPlans: [],
     history: [
       { id: "history-reading", householdId: DEMO_HOUSEHOLD.id, type: "marked_done", actorId: "demo-child", questId: "demo-reading", message: "Reading is waiting for thanks.", createdAt: TODAY },
       { id: "history-laundry", householdId: DEMO_HOUSEHOLD.id, type: "joined", actorId: "demo-child", questId: "demo-laundry", message: "Ayla and Sage teamed up for the laundry.", createdAt: TODAY },

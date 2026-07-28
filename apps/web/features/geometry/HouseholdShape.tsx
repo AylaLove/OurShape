@@ -1,6 +1,6 @@
 "use client";
 
-import { balancePolygonPoints, regularPolygonPoints, type DailyQuest, type Household, type HouseholdMember, type MemberBalance } from "@family-game/domain";
+import { balancePolygonPoints, regularPolygonPoints, type DailyPlan, type DailyQuest, type Household, type HouseholdMember, type MemberBalance } from "@family-game/domain";
 import { Film, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useState } from "react";
@@ -49,6 +49,7 @@ export function HouseholdShape({
   dinosaurState,
   homeEnergy,
   homeGoal,
+  dailyPlans = [],
   childView = false,
   onSelectMember,
 }: {
@@ -59,6 +60,7 @@ export function HouseholdShape({
   dinosaurState: HomeDinosaurState;
   homeEnergy: number;
   homeGoal: HomeGoal;
+  dailyPlans?: DailyPlan[];
   childView?: boolean;
   onSelectMember?: (member: HouseholdMember) => void;
 }) {
@@ -132,6 +134,7 @@ export function HouseholdShape({
         {household.members.map((member, index) => {
           const point = basePoints[index];
           const selected = member.id === activeMember.id;
+          const plan = dailyPlans.find((candidate) => candidate.memberId === member.id);
           return (
             <button
               type="button"
@@ -142,7 +145,8 @@ export function HouseholdShape({
               aria-label={`Open ${member.displayName}'s profile`}
             >
               <span className="shape-member__avatar">{member.initials}</span>
-              <span>{member.displayName}</span>
+              <span className="shape-member__name">{member.displayName}</span>
+              {plan ? <small>{plan.capacity}</small> : null}
             </button>
           );
         })}

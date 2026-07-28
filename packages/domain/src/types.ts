@@ -154,6 +154,20 @@ export interface HighFive {
   createdAt: string;
 }
 
+export type DailyCapacity = "rest" | "gentle" | "steady" | "plenty";
+export type CapacityContext = "private" | "cycle_support" | "menstrual_support" | "luteal_support";
+
+export interface DailyPlan {
+  id: string;
+  householdId: string;
+  memberId: string;
+  date: string;
+  capacity: DailyCapacity;
+  capacityContext: CapacityContext;
+  intentionQuestIds: string[];
+  updatedAt: string;
+}
+
 export interface HistoryEvent {
   id: string;
   householdId: string;
@@ -183,6 +197,7 @@ export interface GameState {
   rewards: Reward[];
   redemptions: RewardRedemption[];
   highFives: HighFive[];
+  dailyPlans?: DailyPlan[];
   history: HistoryEvent[];
 }
 

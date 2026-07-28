@@ -78,4 +78,14 @@ describe("help recommendations", () => {
       open: "open",
     });
   });
+
+  it("places a chosen intention ahead of a general suggestion", () => {
+    const result = recommendHelp([
+      quest("suggested", { suggestedMemberIds: ["sage"] }),
+      quest("intended"),
+    ], member, 3, ["intended"]);
+
+    expect(result.map((item) => item.quest.id)).toEqual(["intended", "suggested"]);
+    expect(result[0].reason).toBe("You chose this for today");
+  });
 });

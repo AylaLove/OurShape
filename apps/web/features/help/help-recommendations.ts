@@ -14,7 +14,7 @@ function modeFor(quest: DailyQuest): HelpMode {
   return "open";
 }
 
-function rankQuest(quest: DailyQuest, member: HouseholdMember): { score: number; reason: string } | null {
+function rankQuest(quest: DailyQuest, member: HouseholdMember, intendedQuestIds: string[]): { score: number; reason: string } | null {
   if (["completed", "cancelled", "pending_endorsement"].includes(quest.state)) return null;
 
   const isRepair = quest.kind === "repair";
@@ -24,15 +24,16 @@ function rankQuest(quest: DailyQuest, member: HouseholdMember): { score: number;
   if (isRepair && !targeted && !joined) return null;
   if (isRepair) return { score: 500, reason: "Make this right first" };
   if (joined) return { score: 400, reason: "You already joined" };
+  if (intendedQuestIds.includes(quest.id)) return { score: 350, reason: "You chose this for today" };
   if (targeted) return { score: 300, reason: "A good match for you" };
   if (quest.kind === "duo" || quest.kind === "family") return { score: 200, reason: "Help together" };
   return { score: 100 - quest.urgency, reason: "The home needs this" };
 }
 
-export function recommendHelp(quests: DailyQuest[], member: HouseholdMember, limit = 3): HelpRecommendation[] {
+export function recommendHelp(quests: DailyQuest[], member: HouseholdMember, limit = 3, intendedQuestIds: string[] = []): HelpRecommendation[] {
   return quests
     .map((quest, index) => {
-      const ranked = rankQuest(quest, member);
+      const ranked = rankQuest(quest, member, intendedQuestIds);
       return ranked ? { quest, index, ...ranked } : null;
     })
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))

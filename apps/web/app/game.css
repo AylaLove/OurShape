@@ -276,12 +276,24 @@
   transform: translate(-50%, -50%);
 }
 
-.shape-member > span:last-child {
+.shape-member__name {
   max-width: 86px;
   overflow: hidden;
   color: #f3f5ed;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.shape-member small {
+  margin-top: -2px;
+  padding: 2px 5px;
+  border: 1px solid color-mix(in srgb, var(--member-colour) 55%, #263f35);
+  border-radius: 999px;
+  color: #c8d8d0;
+  background: rgba(9, 22, 17, 0.86);
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: capitalize;
 }
 
 .shape-member:focus-visible .shape-member__avatar {
