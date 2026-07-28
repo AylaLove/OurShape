@@ -23,6 +23,7 @@ export type QuestState =
 
 export type EffortSize = "light" | "medium" | "substantial" | "major";
 export type QuestIcon = "dishes" | "laundry" | "book" | "plant" | "home" | "wood" | "sparkle" | "repair";
+export type QuestScope = "home" | "personal";
 export type RecurrenceRule =
   | { type: "daily" }
   | { type: "selected_days"; weekdays: number[] }
@@ -52,6 +53,16 @@ export interface Household {
   members: HouseholdMember[];
 }
 
+export interface QuestCategory {
+  id: string;
+  householdId: string;
+  name: string;
+  scope: QuestScope;
+  icon: QuestIcon;
+  sortOrder: number;
+  active: boolean;
+}
+
 export interface DailyQuest {
   id: string;
   householdId: string;
@@ -70,6 +81,9 @@ export interface DailyQuest {
   dueDate: string;
   urgency: 0 | 1 | 2;
   completedAt: string | null;
+  scope?: QuestScope;
+  categoryId?: string | null;
+  homeEnergyValue?: number;
 }
 
 export interface QuestTemplate {
@@ -86,6 +100,9 @@ export interface QuestTemplate {
   recurrence: RecurrenceRule;
   suggestedMemberIds: string[];
   active: boolean;
+  scope?: QuestScope;
+  categoryId?: string | null;
+  homeEnergyValue?: number;
 }
 
 export interface QuestCompletion {

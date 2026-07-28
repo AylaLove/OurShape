@@ -1,4 +1,4 @@
-import type { DailyQuest, GameState } from "@family-game/domain";
+import { questHomeEnergyValue, type DailyQuest, type GameState } from "@family-game/domain";
 
 export type HomeDinosaurState =
   | "resting"
@@ -15,11 +15,14 @@ export type HomeDinosaurState =
   | "repairing";
 
 export function homeEnergy(state: GameState): number {
-  return new Set(
+  const endorsedQuestIds = new Set(
     state.pointLedger
       .filter((entry) => entry.reason === "quest_endorsed" && entry.questId)
       .map((entry) => entry.questId),
-  ).size;
+  );
+  return state.quests
+    .filter((quest) => endorsedQuestIds.has(quest.id))
+    .reduce((total, quest) => total + questHomeEnergyValue(quest), 0);
 }
 
 function minutes(time: string): number {

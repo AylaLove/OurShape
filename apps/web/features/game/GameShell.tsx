@@ -7,6 +7,7 @@ import {
   joinQuest,
   markQuestDone,
   pointBalance,
+  questHomeEnergyValue,
   redeemReward,
   setDailyPlan,
   todayPlan,
@@ -168,6 +169,7 @@ export function GameShell() {
     const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);
     if (result.ok) {
       const helpers = state.household.members.filter((member) => selectedQuest.participantIds.includes(member.id));
+      const gainedHomeEnergy = questHomeEnergyValue(selectedQuest);
       setRecognitionNotices((notices) => [
         ...notices,
         ...recognitionNoticesForQuest(selectedQuest, state.household.members, activeMember),
@@ -180,7 +182,11 @@ export function GameShell() {
         pointsLabel: selectedQuest.kind === "repair"
           ? "Repair accepted"
           : `+${selectedQuest.appreciationValue} ${helpers[0]?.pointLabel ?? "points"} each`,
-        homeEnergyLabel: selectedQuest.kind === "repair" ? "Treasure reopened" : "+1 Home Energy",
+        homeEnergyLabel: selectedQuest.kind === "repair"
+          ? "Treasure reopened"
+          : gainedHomeEnergy > 0
+            ? `+${gainedHomeEnergy} Home Energy`
+            : undefined,
       });
     }
     apply(result, true, "sharing-energy");
@@ -237,7 +243,7 @@ export function GameShell() {
           onNeedsMore={() => apply(endorseQuest(state, selectedQuest.id, activeMember.id, "needs_a_little_more", now()), true)}
         />
       ) : null}
-      {quickAddOpen ? <QuickAddSheet onClose={() => setQuickAddOpen(false)} onAdd={(quest: QuickQuest) => {
+      {quickAddOpen ? <QuickAddSheet members={state.household.members} onClose={() => setQuickAddOpen(false)} onAdd={(quest: QuickQuest) => {
         apply(addQuickQuest(state, quest, activeMember.id, now()));
         setQuickAddOpen(false);
       }} /> : null}

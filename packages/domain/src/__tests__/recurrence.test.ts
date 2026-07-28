@@ -23,4 +23,20 @@ describe("recurring quest generation", () => {
     expect(templateOccursOn({ ...template, recurrence: { type: "selected_days", weekdays: [3] } }, "2026-07-22")).toBe(true);
     expect(templateOccursOn({ ...template, recurrence: { type: "every_n_days", interval: 4, anchorDate: "2026-07-18" } }, "2026-07-22")).toBe(true);
   });
+
+  it("preserves task classification when generating today's quest", () => {
+    const [quest] = generateDailyQuests([{
+      ...template,
+      kind: "personal",
+      scope: "personal",
+      categoryId: "personal-school",
+      homeEnergyValue: 0,
+    }], "2026-07-22", []);
+
+    expect(quest).toMatchObject({
+      scope: "personal",
+      categoryId: "personal-school",
+      homeEnergyValue: 0,
+    });
+  });
 });

@@ -74,7 +74,7 @@ describe("Home Dinosaur state", () => {
         id: "energy-1",
         householdId: state.household.id,
         memberId: "demo-ayla",
-        questId: "quest-a",
+        questId: "demo-laundry",
         amount: 1,
         reason: "quest_endorsed",
         idempotencyKey: "one",
@@ -84,7 +84,7 @@ describe("Home Dinosaur state", () => {
         id: "energy-2",
         householdId: state.household.id,
         memberId: "demo-child",
-        questId: "quest-a",
+        questId: "demo-laundry",
         amount: 1,
         reason: "quest_endorsed",
         idempotencyKey: "two",
@@ -93,6 +93,22 @@ describe("Home Dinosaur state", () => {
     );
 
     expect(homeEnergy(state)).toBe(1);
+  });
+
+  it("keeps endorsed personal responsibilities out of Home Energy", () => {
+    const state = awakeState();
+    state.pointLedger.push({
+      id: "personal-points",
+      householdId: state.household.id,
+      memberId: "demo-child",
+      questId: "demo-reading",
+      amount: 1,
+      reason: "quest_endorsed",
+      idempotencyKey: "personal-reading",
+      createdAt: "2026-07-23T09:00:00.000Z",
+    });
+
+    expect(homeEnergy(state)).toBe(0);
   });
 
   it("explains pending energy without blaming anyone", () => {

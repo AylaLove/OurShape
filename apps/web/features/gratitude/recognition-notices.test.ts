@@ -67,4 +67,15 @@ describe("recognition notices", () => {
     expect(notices[0].moment.pointsLabel).toBe("Trust restored");
     expect(notices[0].moment.homeEnergyLabel).toBe("Treasure reopened");
   });
+
+  it("does not claim that a personal responsibility added Home Energy", () => {
+    const notices = recognitionNoticesForQuest({
+      ...quest("personal"),
+      scope: "personal",
+      homeEnergyValue: 0,
+    }, members, members[0]);
+
+    expect(notices[0].moment.pointsLabel).toBe("+2 High Fives");
+    expect(notices[0].moment.homeEnergyLabel).toBeUndefined();
+  });
 });

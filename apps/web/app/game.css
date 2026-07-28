@@ -1037,12 +1037,117 @@
   background: var(--surface-raised);
 }
 
+.quick-sheet--creator {
+  max-height: 92dvh;
+  overflow-y: auto;
+}
+
 .quick-sheet > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 17px;
+}
+
+.quick-sheet__presets {
+  display: flex;
+  gap: 6px;
+  margin: -3px 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.quick-sheet__presets::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-sheet__presets button {
+  min-height: 36px;
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.scope-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+
+.scope-control legend {
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.scope-control__option {
+  display: grid;
+  min-height: 88px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  text-align: left;
+}
+
+.scope-control__option strong,
+.scope-control__option small {
+  display: block;
+}
+
+.scope-control__option strong {
+  margin-bottom: 4px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.scope-control__option small {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.scope-control__option--active {
+  border-color: var(--gold);
+  background: #302817;
+  color: var(--gold);
+  box-shadow: inset 0 0 0 1px rgba(240, 189, 83, 0.3);
+}
+
+.quick-sheet__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.quick-sheet__rule {
+  margin: 0 0 13px;
+  padding: 10px 11px;
+  border-left: 3px solid var(--green);
+  background: #10251c;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.quick-sheet .primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .quick-grid {
@@ -1175,6 +1280,15 @@
 }
 
 @media (max-width: 430px) {
+  .quick-sheet__row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .scope-control__option {
+    min-height: 96px;
+  }
+
   .shape {
     margin-right: -14px;
     margin-left: -14px;

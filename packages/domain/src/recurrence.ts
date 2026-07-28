@@ -43,6 +43,9 @@ export function generateDailyQuests(templates: QuestTemplate[], date: string, ex
       dueDate: day,
       urgency: 0,
       completedAt: null,
+      scope: template.scope,
+      categoryId: template.categoryId,
+      homeEnergyValue: template.homeEnergyValue,
     }));
   return [...existing, ...created];
 }

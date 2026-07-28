@@ -19,6 +19,9 @@ export const DEMO_QUESTS: DailyQuest[] = [
     dueDate: "2026-07-22",
     urgency: 1,
     completedAt: null,
+    scope: "home",
+    categoryId: "home-repair",
+    homeEnergyValue: 0,
   },
   {
     id: "demo-dishes",
@@ -38,6 +41,9 @@ export const DEMO_QUESTS: DailyQuest[] = [
     dueDate: "2026-07-22",
     urgency: 2,
     completedAt: null,
+    scope: "home",
+    categoryId: "home-kitchen",
+    homeEnergyValue: 1,
   },
   {
     id: "demo-laundry",
@@ -57,6 +63,9 @@ export const DEMO_QUESTS: DailyQuest[] = [
     dueDate: "2026-07-22",
     urgency: 1,
     completedAt: null,
+    scope: "home",
+    categoryId: "home-laundry",
+    homeEnergyValue: 1,
   },
   {
     id: "demo-kitchen",
@@ -76,6 +85,9 @@ export const DEMO_QUESTS: DailyQuest[] = [
     dueDate: "2026-07-22",
     urgency: 0,
     completedAt: null,
+    scope: "home",
+    categoryId: "home-kitchen",
+    homeEnergyValue: 1,
   },
   {
     id: "demo-reading",
@@ -95,6 +107,9 @@ export const DEMO_QUESTS: DailyQuest[] = [
     dueDate: "2026-07-22",
     urgency: 0,
     completedAt: null,
+    scope: "personal",
+    categoryId: "personal-learning",
+    homeEnergyValue: 0,
   },
   {
     id: "demo-plants",
@@ -114,5 +129,8 @@ export const DEMO_QUESTS: DailyQuest[] = [
     dueDate: "2026-07-22",
     urgency: 1,
     completedAt: null,
+    scope: "home",
+    categoryId: "home-care",
+    homeEnergyValue: 1,
   }
 ];
