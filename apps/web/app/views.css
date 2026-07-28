@@ -275,7 +275,11 @@
   inset: 0;
   display: grid;
   place-items: center;
-  padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  padding:
+    max(var(--app-gutter), env(safe-area-inset-top))
+    max(var(--app-gutter), env(safe-area-inset-right))
+    max(var(--app-gutter), env(safe-area-inset-bottom))
+    max(var(--app-gutter), env(safe-area-inset-left));
   background: rgba(4, 12, 9, 0.76);
   backdrop-filter: blur(10px);
   animation: check-in-backdrop-in 180ms ease-out;
@@ -996,7 +1000,11 @@
 .help-view {
   width: min(760px, 100%);
   margin: 0 auto;
-  padding: 26px 18px 120px;
+  padding:
+    26px
+    max(var(--app-gutter), env(safe-area-inset-right))
+    calc(120px + env(safe-area-inset-bottom))
+    max(var(--app-gutter), env(safe-area-inset-left));
 }
 
 .help-view__heading {

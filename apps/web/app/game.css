@@ -75,9 +75,9 @@
   margin-right: 0;
   margin-bottom: 0;
   margin-left: 0;
-  padding-right: clamp(14px, 4vw, 22px);
+  padding-right: clamp(var(--app-gutter), 4vw, 22px);
   padding-top: 14px;
-  padding-left: clamp(14px, 4vw, 22px);
+  padding-left: clamp(var(--app-gutter), 4vw, 22px);
   overflow: hidden;
   background:
     radial-gradient(circle at 50% 52%, rgba(99, 199, 144, 0.13), transparent 43%),
@@ -702,7 +702,11 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-top: 60px;
+  padding:
+    max(60px, env(safe-area-inset-top))
+    max(var(--app-gutter), env(safe-area-inset-right))
+    0
+    max(var(--app-gutter), env(safe-area-inset-left));
   background: rgba(0, 0, 0, 0.72);
 }
 
@@ -980,7 +984,11 @@
   min-height: 100dvh;
   max-height: 100dvh;
   flex-direction: column;
-  padding: 14px 16px calc(22px + env(safe-area-inset-bottom));
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(var(--app-gutter), env(safe-area-inset-right))
+    calc(22px + env(safe-area-inset-bottom))
+    max(var(--app-gutter), env(safe-area-inset-left));
   border-radius: 0;
 }
 
@@ -1211,6 +1219,8 @@
 
 .sheet-backdrop:has(.quest-sheet--child) {
   align-items: stretch;
+  padding-right: 0;
+  padding-left: 0;
   padding-top: 0;
 }
 

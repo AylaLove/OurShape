@@ -17,6 +17,7 @@
   --sun: #f4d46b;
   --button-ink: #07110d;
   --shadow: 0 10px 28px rgba(0, 0, 0, 0.34);
+  --app-gutter: 18px;
 }
 
 * {
@@ -91,7 +92,11 @@ h3 {
   width: min(100%, 760px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: max(18px, env(safe-area-inset-top)) 18px calc(94px + env(safe-area-inset-bottom));
+  padding:
+    max(var(--app-gutter), env(safe-area-inset-top))
+    max(var(--app-gutter), env(safe-area-inset-right))
+    calc(94px + env(safe-area-inset-bottom))
+    max(var(--app-gutter), env(safe-area-inset-left));
 }
 
 .app-shell--child {
@@ -283,7 +288,11 @@ h3 {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   min-height: 69px;
-  padding: 8px max(10px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  padding:
+    8px
+    max(var(--app-gutter), env(safe-area-inset-right))
+    max(8px, env(safe-area-inset-bottom))
+    max(var(--app-gutter), env(safe-area-inset-left));
   border-top: 1px solid var(--line);
   background: rgba(13, 20, 17, 0.97);
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.22);
@@ -430,9 +439,8 @@ h3 {
 }
 
 @media (max-width: 430px) {
-  .app-shell {
-    padding-right: 14px;
-    padding-left: 14px;
+  :root {
+    --app-gutter: 16px;
   }
 
   .topbar h1 {
