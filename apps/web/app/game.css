@@ -84,18 +84,20 @@
 }
 
 .shape__heading {
-  display: flex;
+  display: grid;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+  justify-items: center;
+  gap: 9px;
+  text-align: center;
 }
 
 .shape__heading > div:first-child {
   min-width: 0;
+  max-width: 330px;
 }
 
 .shape__promise {
-  max-width: 245px;
+  max-width: 310px;
   margin-top: 4px;
   color: #b7c9c0;
   font-size: 10px;
@@ -127,9 +129,9 @@
 
 .shape__energy-goal {
   display: grid;
-  width: 145px;
+  width: min(240px, 100%);
   gap: 4px;
-  padding: 7px 9px;
+  padding: 6px 9px;
   border: 1px solid #625526;
   border-radius: 8px;
   background: #211e12;
@@ -199,8 +201,8 @@
 }
 
 .shape--child .shape__stage {
-  width: min(100%, 470px, calc(100dvh - 330px));
-  min-width: 290px;
+  width: min(100%, 470px, calc(100dvh - 380px));
+  min-width: 250px;
   max-height: 100%;
 }
 
@@ -1241,12 +1243,12 @@
   }
 
   .shape__energy-goal {
-    width: 122px;
-    padding-inline: 7px;
+    width: min(230px, 100%);
+    padding-inline: 9px;
   }
 
   .shape__heading {
-    gap: 8px;
+    gap: 7px;
   }
 
   .shape__heading h2 {
