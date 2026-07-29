@@ -110,17 +110,31 @@ database password is stored outside the repository in the local Mac Keychain.
 
 The local application has its public Supabase URL and publishable key in ignored
 development environment settings. The public demo still deliberately uses resettable
-demo data until the sign-in and repository-switching interface is complete.
+demo data, while the explicit `/shared/` route now provides:
+
+- password-free adult email sign-in;
+- first-household creation;
+- a parent-managed child profile;
+- a private second-adult invitation;
+- three starter quests;
+- secure database-backed join, finish, thanks, finishing-touch, reward, quest, and Repair
+  actions;
+- a fresh authoritative household snapshot after every successful action;
+- profile switching limited to the signed-in adult and their directly managed child.
+
+Household identity editing and daily intentions currently state that they are not yet
+connected instead of falsely appearing to save.
 
 ## What still needs external setup
 
-These are not honest to claim until the shared interface and household accounts are
-connected:
+These are not honest to claim until the remaining shared setup and real-phone test are
+complete:
 
-- adult sign-in, household creation, and invitation;
-- switching the live interface from demo state to `SupabaseGameRepository`;
-- three-phone synchronization;
-- persistent household seed data;
+- production Auth redirect configuration;
+- two-adult and parent-managed-child real-account verification;
+- three-phone synchronization and child-device login;
+- the complete reviewed household quest and reward seed data;
+- persistent household identity and daily intention editing;
 - offline action retry;
 - push notifications and quiet hours;
 - backup and monitoring verification;
@@ -149,7 +163,7 @@ and production-build checks.
 
 ## Recommended next checkpoint
 
-Build the sign-in and first-household setup screen, then switch one explicit shared test
-route from demo state to the prepared `SupabaseGameRepository`. Prove the join-to-thanks
-loop on two adult accounts and one parent-managed child profile before changing the public
-demo or adding realtime subscriptions.
+Configure the `/shared/` Auth redirects, publish the route, and prove the join-to-thanks
+loop with Ayla and Raen on two phones while Ayla also uses Sage's managed profile. Do not
+replace the public resettable demo or add realtime subscriptions until that refresh-based
+test passes.

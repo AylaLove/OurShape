@@ -68,7 +68,7 @@ export class SupabaseGameRepository implements GameRepository {
     requestError("Could not create the Repair Mission", error);
   }
 
-  async joinQuest(questId: string, memberId: string): Promise<void> {
+  async joinQuest(questId: string, memberId: string, _idempotencyKey: string): Promise<void> {
     const { error } = await this.client.rpc("join_quest", {
       target_quest: questId,
       target_member: memberId,

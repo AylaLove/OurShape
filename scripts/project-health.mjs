@@ -21,7 +21,7 @@ async function walk(directory) {
   const files = [];
 
   for (const entry of entries) {
-    if (ignoredDirectories.has(entry.name)) continue;
+    if (ignoredDirectories.has(entry.name) || entry.name === "out" || /^out \d+$/.test(entry.name)) continue;
     const absolute = join(directory, entry.name);
     if (entry.isDirectory()) files.push(...(await walk(absolute)));
     else files.push(absolute);

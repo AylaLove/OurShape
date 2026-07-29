@@ -7,25 +7,24 @@ import {
   joinQuest,
   markQuestDone,
   pointBalance,
-  questHomeEnergyValue,
   redeemReward,
   setDailyPlan,
   todayPlan,
   type DailyQuest,
   type DailyPlan,
   type DomainResult,
+  type GameState,
 } from "@family-game/domain";
 import { AppNav, type AppScreen } from "@/components/AppNav";
 import { GratitudeView } from "@/features/gratitude/GratitudeView";
 import { FamilyView } from "@/features/history/FamilyView";
 import { RewardsView } from "@/features/rewards/RewardsView";
 import { Bell, Cloud, ShieldCheck } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createDemoState } from "./demo-state";
 import { ProfileSwitcher } from "./ProfileSwitcher";
 import { QuestDetailSheet } from "./QuestDetailSheet";
 import { TodayView } from "./TodayView";
-import { isSupabaseConfigured } from "@/lib/supabase-browser";
 import { QuickAddSheet, type QuickQuest } from "./QuickAddSheet";
 import { AllQuestsView } from "./AllQuestsView";
 import { RepairMissionSheet, type RepairMissionInput } from "./RepairMissionSheet";
@@ -48,16 +47,30 @@ import {
   HouseholdIdentitySheet,
   type HouseholdIdentityInput,
 } from "@/features/households/HouseholdIdentitySheet";
-
-function now() {
-  return new Date().toISOString();
-}
-
+import {
+  useLiveGameActions,
+  type LiveGameConnection,
+} from "./use-live-game-actions";
+import { playCelebrationTone } from "./play-celebration-tone";
+import {
+  gratitudeMomentForQuest,
+  withHouseholdIdentity,
+} from "./game-shell-state";
+const now = () => new Date().toISOString();
 const HYDRATION_SAFE_DAYTIME = new Date(2026, 0, 1, 12, 0, 0);
-
-export function GameShell() {
-  const [state, setState] = useState(createDemoState);
-  const [activeMemberId, setActiveMemberId] = useState("demo-ayla");
+export function GameShell({
+  initialState,
+  liveConnection,
+  headerControls,
+}: {
+  initialState?: GameState;
+  liveConnection?: LiveGameConnection;
+  headerControls?: ReactNode;
+}) {
+  const [state, setState] = useState<GameState>(() => initialState ?? createDemoState());
+  const [activeMemberId, setActiveMemberId] = useState(
+    liveConnection?.initialMemberId ?? "demo-ayla",
+  );
   const [clientTime, setClientTime] = useState<Date | null>(null);
   const [section, setSection] = useState<AppScreen>("today");
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
@@ -75,7 +88,7 @@ export function GameShell() {
   const activeMember = state.household.members.find((member) => member.id === activeMemberId) ?? state.household.members[0];
   const selectedQuest = useMemo(() => state.quests.find((quest) => quest.id === selectedQuestId) ?? null, [selectedQuestId, state.quests]);
   const waitingCount = state.quests.filter((quest) => quest.state === "pending_endorsement" && !quest.participantIds.includes(activeMember.id)).length;
-  const databaseReady = isSupabaseConfigured();
+  const databaseReady = Boolean(liveConnection);
   const dinosaurState = companionMoment ?? deriveHomeDinosaurState(
     state,
     activeMember.id,
@@ -97,7 +110,6 @@ export function GameShell() {
       .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
       .catch(() => undefined);
   }, []);
-
   useEffect(() => {
     setClientTime(new Date());
   }, []);
@@ -123,7 +135,6 @@ export function GameShell() {
     setGratitudeMoment(notice.moment);
     setRecognitionNotices((entries) => entries.filter((entry) => entry !== notice));
   }, [activeMemberId, recognitionNotices]);
-
   useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(null), 2800);
@@ -143,53 +154,65 @@ export function GameShell() {
     if (close && result.ok) setSelectedQuestId(null);
   }
 
-  function selectQuest(quest: DailyQuest) {
-    setSelectedQuestId(quest.id);
-  }
+  const { runLiveAction, changeActiveMember } = useLiveGameActions({
+    connection: liveConnection,
+    activeMemberId,
+    state,
+    section,
+    setState,
+    setSection,
+    setActiveMemberId,
+    setSelectedQuestId,
+    setToast,
+    setCompanionMoment,
+  });
+  const selectQuest = (quest: DailyQuest) => setSelectedQuestId(quest.id);
 
   function updateHouseholdIdentity(input: HouseholdIdentityInput) {
-    setState((current) => ({
-      ...current,
-      household: {
-        ...current.household,
-        name: input.name,
-        motto: input.motto,
-        members: current.household.members.map((member) => ({
-          ...member,
-          symbol: input.symbols[member.id] ?? member.symbol,
-        })),
-      },
-    }));
+    if (liveConnection) {
+      setIdentityOpen(false);
+      setToast("Household editing will be connected in the next shared-data batch.");
+      return;
+    }
+    setState((current) => withHouseholdIdentity(current, input));
     setIdentityOpen(false);
     setToast("Your household identity is ready.");
   }
 
-  function thankSelectedQuest(note: string | null) {
+  async function thankSelectedQuest(note: string | null) {
     if (!selectedQuest) return;
-    const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);
-    if (result.ok) {
-      const helpers = state.household.members.filter((member) => selectedQuest.participantIds.includes(member.id));
-      const gainedHomeEnergy = questHomeEnergyValue(selectedQuest);
-      setRecognitionNotices((notices) => [
-        ...notices,
-        ...recognitionNoticesForQuest(selectedQuest, state.household.members, activeMember),
-      ]);
-      if (navigator.vibrate) navigator.vibrate(35);
-      if (soundOn) playCelebrationTone();
-      setGratitudeMoment({
-        title: "Effort noticed",
-        message: `${helpers.map((member) => member.displayName).join(" + ")} helped with ${selectedQuest.title}.`,
-        pointsLabel: selectedQuest.kind === "repair"
-          ? "Repair accepted"
-          : `+${selectedQuest.appreciationValue} ${helpers[0]?.pointLabel ?? "points"} each`,
-        homeEnergyLabel: selectedQuest.kind === "repair"
-          ? "Treasure reopened"
-          : gainedHomeEnergy > 0
-            ? `+${gainedHomeEnergy} Home Energy`
-            : undefined,
-      });
+    const moment = gratitudeMomentForQuest(state, selectedQuest);
+
+    if (liveConnection) {
+      const completion = state.completions.find((item) => item.questId === selectedQuest.id);
+      if (!completion) {
+        setToast("This finished quest is missing its completion record.");
+        return;
+      }
+      await runLiveAction(
+        () => liveConnection.repository.endorseCompletion(
+          completion.id,
+          activeMember.id,
+          "thanked",
+          note,
+        ),
+        "Thanks sent. The effort now counts.",
+        { close: true, moment: "sharing-energy" },
+      );
+      setGratitudeMoment(moment);
+    } else {
+      const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);
+      if (result.ok) {
+        setRecognitionNotices((notices) => [
+          ...notices,
+          ...recognitionNoticesForQuest(selectedQuest, state.household.members, activeMember),
+        ]);
+        setGratitudeMoment(moment);
+      }
+      apply(result, true, "sharing-energy");
     }
-    apply(result, true, "sharing-energy");
+    if (navigator.vibrate) navigator.vibrate(35);
+    if (soundOn) playCelebrationTone();
   }
 
   return (
@@ -200,16 +223,21 @@ export function GameShell() {
           <h1>{activeMember.role === "child" ? "How Can I Help?" : state.household.name}</h1>
         </div>
         <div className="topbar__actions">
+          {headerControls}
           {activeMember.role === "child" && !databaseReady ? (
             <span className="topbar__demo-chip" title="Show-only demo. Progress resets.">
               Demo
             </span>
           ) : null}
-          <ProfileSwitcher members={state.household.members} activeMember={activeMember} compact={activeMember.role === "child"} points={activeMember.role === "child" ? personalPoints : undefined} onChange={(memberId) => {
-            setActiveMemberId(memberId);
-            setSelectedQuestId(null);
-            if (section === "quests" || (state.household.members.find((member) => member.id === memberId)?.role === "child" && section === "family")) setSection("today");
-          }} />
+          <ProfileSwitcher
+            members={liveConnection
+              ? state.household.members.filter((member) => liveConnection.controllableMemberIds.includes(member.id))
+              : state.household.members}
+            activeMember={activeMember}
+            compact={activeMember.role === "child"}
+            points={activeMember.role === "child" ? personalPoints : undefined}
+            onChange={(memberId) => void changeActiveMember(memberId)}
+          />
           <button className="round-button round-button--plain notification-button" type="button" aria-label={`${waitingCount} ${waitingCount === 1 ? "item" : "items"} waiting for thanks`} onClick={() => setSection("thanks")}>
             <Bell size={20} />{waitingCount ? <span>{waitingCount}</span> : null}
           </button>
@@ -226,7 +254,20 @@ export function GameShell() {
       {section === "help" ? <HelpView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onShowAll={() => setSection("quests")} /> : null}
       {section === "quests" ? <AllQuestsView state={state} activeMember={activeMember} onSelectQuest={selectQuest} onQuickAdd={() => setQuickAddOpen(true)} onAddRepair={() => setRepairAddOpen(true)} /> : null}
       {section === "thanks" ? <GratitudeView state={state} activeMember={activeMember} homeEnergy={energy} onSelectQuest={selectQuest} /> : null}
-      {section === "rewards" ? <RewardsView state={state} activeMember={activeMember} onRedeem={(rewardId) => apply(redeemReward(state, rewardId, activeMember.id, now()))} /> : null}
+      {section === "rewards" ? <RewardsView state={state} activeMember={activeMember} onRedeem={(rewardId) => {
+        if (liveConnection) {
+          void runLiveAction(
+            () => liveConnection.repository.redeemReward(
+              rewardId,
+              activeMember.id,
+              crypto.randomUUID(),
+            ),
+            "Reward requested.",
+          );
+        } else {
+          apply(redeemReward(state, rewardId, activeMember.id, now()));
+        }
+      }} /> : null}
       {section === "family" ? <FamilyView state={state} activeMember={activeMember} onEditIdentity={() => setIdentityOpen(true)} /> : null}
 
       <AppNav active={section} onChange={setSection} childView={activeMember.role === "child"} />
@@ -237,19 +278,98 @@ export function GameShell() {
           members={state.household.members}
           activeMember={activeMember}
           onClose={() => setSelectedQuestId(null)}
-          onJoin={() => apply(joinQuest(state, selectedQuest.id, activeMember.id, now()))}
-          onFinish={() => apply(markQuestDone(state, selectedQuest.id, activeMember.id, now()), true)}
+          onJoin={() => {
+            if (liveConnection) {
+              void runLiveAction(
+                () => liveConnection.repository.joinQuest(
+                  selectedQuest.id,
+                  activeMember.id,
+                  crypto.randomUUID(),
+                ),
+                `${activeMember.displayName} joined in.`,
+              );
+            } else {
+              apply(joinQuest(state, selectedQuest.id, activeMember.id, now()));
+            }
+          }}
+          onFinish={() => {
+            if (liveConnection) {
+              void runLiveAction(
+                () => liveConnection.repository.completeQuest(
+                  selectedQuest.id,
+                  activeMember.id,
+                  crypto.randomUUID(),
+                ),
+                "Finished. Now someone else can notice the effort.",
+                { close: true },
+              );
+            } else {
+              apply(markQuestDone(state, selectedQuest.id, activeMember.id, now()), true);
+            }
+          }}
           onThank={thankSelectedQuest}
-          onNeedsMore={() => apply(endorseQuest(state, selectedQuest.id, activeMember.id, "needs_a_little_more", now()), true)}
+          onNeedsMore={() => {
+            if (liveConnection) {
+              const completion = state.completions.find((item) => item.questId === selectedQuest.id);
+              if (!completion) {
+                setToast("This finished quest is missing its completion record.");
+                return;
+              }
+              void runLiveAction(
+                () => liveConnection.repository.endorseCompletion(
+                  completion.id,
+                  activeMember.id,
+                  "needs_a_little_more",
+                  null,
+                ),
+                "One small finishing touch was requested.",
+                { close: true },
+              );
+            } else {
+              apply(endorseQuest(state, selectedQuest.id, activeMember.id, "needs_a_little_more", now()), true);
+            }
+          }}
         />
       ) : null}
       {quickAddOpen ? <QuickAddSheet members={state.household.members} onClose={() => setQuickAddOpen(false)} onAdd={(quest: QuickQuest) => {
-        apply(addQuickQuest(state, quest, activeMember.id, now()));
-        setQuickAddOpen(false);
+        if (liveConnection) {
+          void runLiveAction(
+            () => liveConnection.repository.createDailyQuest({
+              householdId: liveConnection.householdId,
+              title: quest.title,
+              instruction: quest.instruction,
+              scope: quest.scope ?? "home",
+              categoryId: quest.categoryId ?? null,
+              effort: quest.effort,
+              appreciationValue: quest.appreciationValue,
+              icon: quest.icon,
+              suggestedMemberId: quest.suggestedMemberIds[0] ?? null,
+              idempotencyKey: crypto.randomUUID(),
+            }),
+            `${quest.title} was added.`,
+          );
+          setQuickAddOpen(false);
+        } else {
+          apply(addQuickQuest(state, quest, activeMember.id, now()));
+          setQuickAddOpen(false);
+        }
       }} /> : null}
       {repairAddOpen ? <RepairMissionSheet members={state.household.members} onClose={() => setRepairAddOpen(false)} onAdd={(mission: RepairMissionInput) => {
-        apply(addRepairMission(state, mission, activeMember.id, now()));
-        setRepairAddOpen(false);
+        if (liveConnection) {
+          void runLiveAction(
+            () => liveConnection.repository.createRepairMission(
+              liveConnection.householdId,
+              mission.targetMemberId,
+              mission.title,
+              mission.instruction,
+            ),
+            "The Repair Mission is ready.",
+          );
+          setRepairAddOpen(false);
+        } else {
+          apply(addRepairMission(state, mission, activeMember.id, now()));
+          setRepairAddOpen(false);
+        }
       }} /> : null}
       {gratitudeMoment ? <GratitudeMoment moment={gratitudeMoment} onClose={() => setGratitudeMoment(null)} /> : null}
       {profileMember ? <ProfileSheet state={state} member={profileMember} activeMember={activeMember} today={today} soundOn={soundOn} onToggleSound={() => setSoundOn((value) => !value)} onEditDailyPlan={() => {
@@ -263,7 +383,11 @@ export function GameShell() {
         today={today}
         onClose={() => setDailyPlanMemberId(null)}
         onSave={(input: Pick<DailyPlan, "capacity" | "capacityContext" | "intentionQuestIds">) => {
-          apply(setDailyPlan(state, input, dailyPlanMember.id, now()));
+          if (liveConnection) {
+            setToast("Shared daily intentions will be connected in the next data batch.");
+          } else {
+            apply(setDailyPlan(state, input, dailyPlanMember.id, now()));
+          }
           setDailyPlanMemberId(null);
           setProfileMemberId(dailyPlanMember.id);
         }}
@@ -272,27 +396,4 @@ export function GameShell() {
       {toast ? <div className="toast" role="status">{toast}</div> : null}
     </main>
   );
-}
-
-function playCelebrationTone() {
-  try {
-    const AudioContextConstructor = window.AudioContext ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextConstructor) return;
-    const context = new AudioContextConstructor();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(520, context.currentTime);
-    oscillator.frequency.linearRampToValueAtTime(680, context.currentTime + 0.12);
-    gain.gain.setValueAtTime(0.0001, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.08, context.currentTime + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.2);
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.21);
-    oscillator.addEventListener("ended", () => void context.close(), { once: true });
-  } catch {
-    // The visual acknowledgement remains available when audio is blocked.
-  }
 }
