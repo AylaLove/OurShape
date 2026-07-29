@@ -1,6 +1,6 @@
 import type { GameState, QuestEndorsement } from "@family-game/domain";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { GameRepository } from "./game-repository";
+import type { CreateDailyQuestInput, GameRepository } from "./game-repository";
 
 function requireSnapshot(value: unknown): GameState {
   if (!value || typeof value !== "object") throw new Error("The household snapshot was empty.");
@@ -40,6 +40,22 @@ export class SupabaseGameRepository implements GameRepository {
     });
     requestError("Could not load the household", error);
     return requireSnapshot(data);
+  }
+
+  async createDailyQuest(input: CreateDailyQuestInput): Promise<void> {
+    const { error } = await this.client.rpc("create_daily_quest", {
+      target_household: input.householdId,
+      target_title: input.title,
+      target_instruction: input.instruction,
+      target_scope: input.scope,
+      target_category_id: input.categoryId,
+      target_effort: input.effort,
+      target_appreciation_value: input.appreciationValue,
+      target_icon: input.icon,
+      target_suggested_member: input.suggestedMemberId,
+      request_key: input.idempotencyKey,
+    });
+    requestError("Could not add the task", error);
   }
 
   async createRepairMission(householdId: string, targetMemberId: string, title: string, instruction: string): Promise<void> {

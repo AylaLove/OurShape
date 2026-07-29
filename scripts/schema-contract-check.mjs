@@ -32,7 +32,11 @@ const repairActions = await readFile(
   new URL("../supabase/migrations/202607240003_repair_mission_actions.sql", import.meta.url),
   "utf8",
 );
-const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions].join("\n");
+const questMetadata = await readFile(
+  new URL("../supabase/migrations/202607290001_quest_scope_categories_energy.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata].join("\n");
 
 const requiredTables = [
   "households",
@@ -53,6 +57,7 @@ const requiredTables = [
   "audit_events",
   "household_invites",
   "child_device_access",
+  "quest_categories",
 ];
 
 const requiredFunctions = [
@@ -72,6 +77,7 @@ const requiredFunctions = [
   "claim_child_device",
   "revoke_child_device",
   "create_repair_mission",
+  "create_daily_quest",
 ];
 
 const failures = [];
@@ -149,6 +155,20 @@ if (!repairActions.includes("Finish the open Repair Mission before opening Treas
 
 if (!repairActions.includes("if quest_row.kind <> 'repair' then")) {
   failures.push("Repair Mission completion can create appreciation or contribution credit.");
+}
+
+for (const field of ["scope", "category_id", "home_energy_value", "suggested_member_ids"]) {
+  if (!questMetadata.includes(`add column ${field}`)) {
+    failures.push(`Daily quest metadata is missing: ${field}`);
+  }
+}
+
+if (!questMetadata.includes("Personal tasks need a family member")) {
+  failures.push("Personal task ownership is not validated.");
+}
+
+if (!questMetadata.includes("'{questCategories}'")) {
+  failures.push("Household snapshots do not include custom task categories.");
 }
 
 if (failures.length) {

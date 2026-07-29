@@ -209,6 +209,7 @@ export interface HistoryEvent {
 
 export interface GameState {
   household: Household;
+  questCategories?: QuestCategory[];
   quests: DailyQuest[];
   completions: QuestCompletion[];
   endorsements: QuestEndorsement[];

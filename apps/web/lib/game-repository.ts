@@ -1,7 +1,27 @@
-import type { GameState, QuestEndorsement } from "@family-game/domain";
+import type {
+  EffortSize,
+  GameState,
+  QuestEndorsement,
+  QuestIcon,
+  QuestScope,
+} from "@family-game/domain";
+
+export interface CreateDailyQuestInput {
+  householdId: string;
+  title: string;
+  instruction: string;
+  scope: QuestScope;
+  categoryId: string | null;
+  effort: EffortSize;
+  appreciationValue: number;
+  icon: QuestIcon;
+  suggestedMemberId: string | null;
+  idempotencyKey: string;
+}
 
 export interface GameRepository {
   loadHouseholdSnapshot(householdId: string, activeMemberId: string): Promise<GameState>;
+  createDailyQuest(input: CreateDailyQuestInput): Promise<void>;
   createRepairMission(householdId: string, targetMemberId: string, title: string, instruction: string): Promise<void>;
   joinQuest(questId: string, memberId: string, idempotencyKey: string): Promise<void>;
   completeQuest(questId: string, memberId: string, idempotencyKey: string): Promise<void>;
