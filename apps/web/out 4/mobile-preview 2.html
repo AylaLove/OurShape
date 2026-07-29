@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Family Game Mobile Preview</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 24px;
+        background: #080e0c;
+        color: #eef7f1;
+        font: 14px/1.4 system-ui, sans-serif;
+      }
+
+      main {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 28px;
+      }
+
+      section {
+        display: grid;
+        gap: 8px;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+      }
+
+      h1 {
+        width: 100%;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      h2 {
+        color: #c5d6cd;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      iframe {
+        border: 1px solid #33483e;
+        border-radius: 8px;
+        background: #0c1512;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Child Home: Mobile QA</h1>
+    <main>
+      <section>
+        <h2>iPhone 8: 375 x 667</h2>
+        <iframe
+          title="iPhone 8 child home"
+          src="/?profile=demo-child&amp;screens=1"
+          width="375"
+          height="667"
+        ></iframe>
+      </section>
+      <section>
+        <h2>iPhone 11: 414 x 896</h2>
+        <iframe
+          title="iPhone 11 child home"
+          src="/?profile=demo-child&amp;screens=1"
+          width="414"
+          height="896"
+        ></iframe>
+      </section>
+    </main>
+  </body>
+</html>
