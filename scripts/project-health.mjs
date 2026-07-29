@@ -13,7 +13,7 @@ const required = [
   "packages/domain/src/index.ts",
 ];
 const sourceExtensions = new Set([".ts", ".tsx", ".js", ".mjs"]);
-const ignoredDirectories = new Set([".git", ".next", "node_modules"]);
+const ignoredDirectories = new Set([".git", ".next", "dist", "node_modules"]);
 const problems = [];
 
 async function walk(directory) {

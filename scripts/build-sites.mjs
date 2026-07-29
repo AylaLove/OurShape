@@ -1,4 +1,5 @@
 import { cp, mkdir, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,6 +7,9 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const web = resolve(root, "apps/web");
 const nextCli = resolve(web, "node_modules/next/dist/bin/next");
+const localEnvironment = resolve(root, ".env.local");
+
+if (existsSync(localEnvironment)) process.loadEnvFile(localEnvironment);
 
 const result = spawnSync(process.execPath, [nextCli, "build"], {
   cwd: web,
