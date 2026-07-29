@@ -17,21 +17,27 @@ The repository now contains the complete data contract needed for the first thre
 
 The current interface is still intentionally using resettable demo data. No fake connection is claimed.
 
+## Completed infrastructure
+
+- A dedicated `Our Shape Development` Supabase project has been created.
+- All repository migrations have been applied in filename order.
+- The 19 expected public tables are present.
+- The public project URL and publishable key are stored in ignored local settings.
+- The database password has been rotated and stored in the local Mac Keychain.
+
 ## External setup still required
 
-1. Create a new Supabase development project specifically for this app.
-2. Apply all migrations in `supabase/migrations` in filename order.
-3. Put the project URL and publishable key in `.env.local`.
-4. Create the first adult Auth account.
-5. Use `create_household_with_owner` to create the home and owner membership.
-6. Use `add_managed_child` to create the child profile.
-7. Use `create_household_invite` to produce a short-lived invitation for the second adult.
-8. Sign in as the second adult and use `accept_household_invite`.
-9. Enable Supabase anonymous sign-in for the child-device flow.
-10. On the parent phone, use `create_child_device_code` for the child profile.
-11. On the child phone, start an anonymous session and use `claim_child_device`.
-12. Seed the reviewed household quest templates and rewards.
-13. Switch the interface from demo repository to `SupabaseGameRepository`.
+1. Build the adult sign-in and first-household setup screen.
+2. Create the first adult Auth account.
+3. Use `create_household_with_owner` to create the home and owner membership.
+4. Use `add_managed_child` to create the child profile.
+5. Use `create_household_invite` to produce a short-lived invitation for the second adult.
+6. Sign in as the second adult and use `accept_household_invite`.
+7. Enable Supabase anonymous sign-in for the child-device flow.
+8. On the parent phone, use `create_child_device_code` for the child profile.
+9. On the child phone, start an anonymous session and use `claim_child_device`.
+10. Seed the reviewed household quest templates and rewards.
+11. Switch an explicit shared test route from demo state to `SupabaseGameRepository`.
 
 ## Required proof before calling it shared
 

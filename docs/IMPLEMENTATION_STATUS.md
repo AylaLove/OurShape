@@ -101,13 +101,26 @@ The appreciation loop now keeps two ledgers distinct:
 - A pure, tested child-help recommender that does not alter quest state.
 - Compact profile and opening-check-in views derived from the existing household snapshot.
 
+## Shared-data checkpoint
+
+The dedicated `Our Shape Development` Supabase project now exists. All migrations have
+been applied in order and the resulting 19-table schema is visible in the project. New
+tables are not exposed automatically, automatic row-level security is enabled, and the
+database password is stored outside the repository in the local Mac Keychain.
+
+The local application has its public Supabase URL and publishable key in ignored
+development environment settings. The public demo still deliberately uses resettable
+demo data until the sign-in and repository-switching interface is complete.
+
 ## What still needs external setup
 
-These are not honest to claim without a real Supabase project and private preview host:
+These are not honest to claim until the shared interface and household accounts are
+connected:
 
-- adult authentication and invitation;
-- three-phone realtime synchronization;
-- persistent household data;
+- adult sign-in, household creation, and invitation;
+- switching the live interface from demo state to `SupabaseGameRepository`;
+- three-phone synchronization;
+- persistent household seed data;
 - offline action retry;
 - push notifications and quiet hours;
 - backup and monitoring verification;
@@ -136,7 +149,7 @@ and production-build checks.
 
 ## Recommended next checkpoint
 
-Connect one development Supabase project and switch the interface from the demo repository
-to the prepared `SupabaseGameRepository`. Then prove the same join-to-thanks loop on two
-adult accounts and one parent-managed child profile. After that proof, conduct the first
-short household playtest before adding more game systems.
+Build the sign-in and first-household setup screen, then switch one explicit shared test
+route from demo state to the prepared `SupabaseGameRepository`. Prove the join-to-thanks
+loop on two adult accounts and one parent-managed child profile before changing the public
+demo or adding realtime subscriptions.
