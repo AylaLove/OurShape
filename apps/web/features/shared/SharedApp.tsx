@@ -86,14 +86,6 @@ export function SharedApp() {
     let active = true;
     async function start() {
       try {
-        const code = new URL(window.location.href).searchParams.get("code");
-        if (code) {
-          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError) throw exchangeError;
-          const cleanUrl = new URL(window.location.href);
-          cleanUrl.searchParams.delete("code");
-          window.history.replaceState({}, "", cleanUrl);
-        }
         const { data, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw sessionError;
         if (!active) return;
