@@ -6,6 +6,7 @@ import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 import { SupabaseGameRepository } from "@/lib/supabase-game-repository";
 import { SupabaseHouseholdOnboarding } from "@/lib/supabase-household-onboarding";
+import { authErrorMessage } from "./auth-message";
 import styles from "./SharedApp.module.css";
 import {
   humanError,
@@ -43,7 +44,7 @@ export function EmailSignIn({ client }: { client: SupabaseClient }) {
       email: email.trim(),
       options: { emailRedirectTo: redirectUrl.toString() },
     });
-    if (signInError) setError(signInError.message);
+    if (signInError) setError(authErrorMessage(signInError));
     else setSent(true);
     setBusy(false);
   }
