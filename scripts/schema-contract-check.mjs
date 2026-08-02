@@ -36,7 +36,11 @@ const questMetadata = await readFile(
   new URL("../supabase/migrations/202607290001_quest_scope_categories_energy.sql", import.meta.url),
   "utf8",
 );
-const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata].join("\n");
+const membershipAccess = await readFile(
+  new URL("../supabase/migrations/202608020001_authenticated_membership_read.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata, membershipAccess].join("\n");
 
 const requiredTables = [
   "households",
@@ -169,6 +173,14 @@ if (!questMetadata.includes("Personal tasks need a family member")) {
 
 if (!questMetadata.includes("'{questCategories}'")) {
   failures.push("Household snapshots do not include custom task categories.");
+}
+
+if (!membershipAccess.includes("grant select on table public.household_members to authenticated")) {
+  failures.push("Authenticated users cannot discover their RLS-scoped household membership.");
+}
+
+if (/\bgrant\s+(insert|update|delete|all)\b[^;]*\bhousehold_members\b/i.test(membershipAccess)) {
+  failures.push("The membership discovery migration grants unsafe write access.");
 }
 
 if (failures.length) {
