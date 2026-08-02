@@ -40,7 +40,11 @@ const membershipAccess = await readFile(
   new URL("../supabase/migrations/202608020001_authenticated_membership_read.sql", import.meta.url),
   "utf8",
 );
-const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata, membershipAccess].join("\n");
+const secureTokenExtensionPath = await readFile(
+  new URL("../supabase/migrations/202608020002_secure_token_extension_path.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata, membershipAccess, secureTokenExtensionPath].join("\n");
 
 const requiredTables = [
   "households",
@@ -177,6 +181,21 @@ if (!questMetadata.includes("'{questCategories}'")) {
 
 if (!membershipAccess.includes("grant select on table public.household_members to authenticated")) {
   failures.push("Authenticated users cannot discover their RLS-scoped household membership.");
+}
+
+for (const signature of [
+  "public.create_household_invite(uuid, integer)",
+  "public.accept_household_invite(text, text, text, text)",
+  "public.create_child_device_code(uuid, integer)",
+  "public.claim_child_device(text)",
+]) {
+  if (!secureTokenExtensionPath.includes(`alter function ${signature}`)) {
+    failures.push(`Secure token function is missing its extension path: ${signature}`);
+  }
+}
+
+if ((secureTokenExtensionPath.match(/set search_path = public, extensions/g) ?? []).length !== 4) {
+  failures.push("Secure token functions cannot resolve Supabase's pgcrypto extension safely.");
 }
 
 if (/\bgrant\s+(insert|update|delete|all)\b[^;]*\bhousehold_members\b/i.test(membershipAccess)) {
