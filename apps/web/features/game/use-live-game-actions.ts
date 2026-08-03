@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { AppScreen } from "@/components/AppNav";
 import type { GameRepository } from "@/lib/game-repository";
 import type { HomeDinosaurState } from "@/features/companion/companion-state";
+import { executeLiveAction } from "./live-game-action";
 
 export interface LiveGameConnection {
   householdId: string;
@@ -48,20 +49,26 @@ export function useLiveGameActions({
     action: () => Promise<void>,
     successMessage: string,
     options: Options = {},
-  ) {
-    if (!connection || busy) return;
+  ): Promise<boolean> {
+    if (!connection || busy) return false;
     setBusy(true);
     try {
-      await action();
-      setState(await connection.repository.loadHouseholdSnapshot(
-        connection.householdId,
-        activeMemberId,
-      ));
+      const result = await executeLiveAction(
+        action,
+        () => connection.repository.loadHouseholdSnapshot(
+          connection.householdId,
+          activeMemberId,
+        ),
+      );
+      if (!result.ok) {
+        setToast(result.message);
+        return false;
+      }
+      setState(result.value);
       setToast(successMessage);
       if (options.moment) setCompanionMoment(options.moment);
       if (options.close) setSelectedQuestId(null);
-    } catch (error) {
-      setToast(error instanceof Error ? error.message : "That did not work. Please try again.");
+      return true;
     } finally {
       setBusy(false);
     }

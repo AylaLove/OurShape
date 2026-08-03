@@ -4,7 +4,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { Mail, UserPlus, Users } from "lucide-react";
 import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
-import { SupabaseGameRepository } from "@/lib/supabase-game-repository";
 import { SupabaseHouseholdOnboarding } from "@/lib/supabase-household-onboarding";
 import { authErrorMessage } from "./auth-message";
 import styles from "./SharedApp.module.css";
@@ -98,22 +97,17 @@ export function CreateHousehold({
     setError(null);
     try {
       const onboarding = new SupabaseHouseholdOnboarding(client);
-      const membership = await onboarding.createHousehold(
-        homeName.trim(),
-        Intl.DateTimeFormat().resolvedOptions().timeZone || "Africa/Johannesburg",
-        adultName.trim(),
-        memberInitials(adultName),
-      );
-      await onboarding.addManagedChild(
-        membership.householdId,
-        childName.trim(),
-        memberInitials(childName),
-      );
-      await seedStarterQuests(client, membership.householdId);
-      const token = await onboarding.createAdultInvite(membership.householdId);
+      const setup = await onboarding.createHouseholdSetup({
+        homeName: homeName.trim(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Africa/Johannesburg",
+        ownerName: adultName.trim(),
+        ownerInitials: memberInitials(adultName),
+        childName: childName.trim(),
+        childInitials: memberInitials(childName),
+      });
       const inviteUrl = new URL("/shared/", window.location.origin);
-      inviteUrl.searchParams.set("invite", token);
-      await onReady(toMembershipRow(membership), inviteUrl.toString());
+      inviteUrl.searchParams.set("invite", setup.inviteToken);
+      await onReady(toMembershipRow(setup), inviteUrl.toString());
     } catch (cause) {
       setError(humanError(cause));
     } finally {
@@ -126,7 +120,7 @@ export function CreateHousehold({
       <Users size={34} aria-hidden="true" />
       <p className={styles.eyebrow}>FIRST SETUP</p>
       <h1>Create your home</h1>
-      <p className={styles.intro}>This creates one private household and Sage’s managed child profile.</p>
+      <p className={styles.intro}>This creates one private household and one managed child profile.</p>
       <form className={styles.form} onSubmit={submit}>
         <label>Household name<input required value={homeName} onChange={(event) => setHomeName(event.target.value)} /></label>
         <label>Your name<input required value={adultName} onChange={(event) => setAdultName(event.target.value)} /></label>
@@ -199,27 +193,4 @@ function toMembershipRow(membership: { householdId: string; memberId: string }):
     role: "adult",
     user_id: null,
   };
-}
-
-async function seedStarterQuests(client: SupabaseClient, householdId: string) {
-  const repository = new SupabaseGameRepository(client);
-  const starterQuests = [
-    ["Dishes", "Clear, wash, and leave the sink ready.", "home-kitchen", "dishes"],
-    ["Pack away laundry", "Sort the clean clothes and return them to their homes.", "home-laundry", "laundry"],
-    ["Water plants", "Check the soil and water the plants that are dry.", "home-garden", "plant"],
-  ] as const;
-  await Promise.all(starterQuests.map(([title, instruction, categoryId, icon]) => (
-    repository.createDailyQuest({
-      householdId,
-      title,
-      instruction,
-      scope: "home",
-      categoryId,
-      effort: "light",
-      appreciationValue: 1,
-      icon,
-      suggestedMemberId: null,
-      idempotencyKey: `starter:${categoryId}`,
-    })
-  )));
 }

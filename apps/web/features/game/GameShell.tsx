@@ -189,7 +189,7 @@ export function GameShell({
         setToast("This finished quest is missing its completion record.");
         return;
       }
-      await runLiveAction(
+      if (!await runLiveAction(
         () => liveConnection.repository.endorseCompletion(
           completion.id,
           activeMember.id,
@@ -198,7 +198,7 @@ export function GameShell({
         ),
         "Thanks sent. The effort now counts.",
         { close: true, moment: "sharing-energy" },
-      );
+      )) return;
       setGratitudeMoment(moment);
     } else {
       const result = endorseQuest(state, selectedQuest.id, activeMember.id, "thanked", now(), note);

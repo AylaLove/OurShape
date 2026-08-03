@@ -5,6 +5,11 @@ type MembershipResult = {
   memberId: string;
 };
 
+type HouseholdSetupResult = MembershipResult & {
+  childMemberId: string;
+  inviteToken: string;
+};
+
 function fail(context: string, error: { message: string } | null): void {
   if (error) throw new Error(`${context}: ${error.message}`);
 }
@@ -17,8 +22,52 @@ function membership(data: unknown): MembershipResult {
   return { householdId: result.household_id, memberId: result.member_id };
 }
 
+function householdSetup(data: unknown): HouseholdSetupResult {
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || typeof row !== "object") throw new Error("Household setup returned no result.");
+  const result = row as {
+    household_id?: string;
+    member_id?: string;
+    child_member_id?: string;
+    invite_token?: string;
+  };
+  if (!result.household_id || !result.member_id || !result.child_member_id || !result.invite_token) {
+    throw new Error("Household setup returned an invalid result.");
+  }
+  return {
+    householdId: result.household_id,
+    memberId: result.member_id,
+    childMemberId: result.child_member_id,
+    inviteToken: result.invite_token,
+  };
+}
+
 export class SupabaseHouseholdOnboarding {
   constructor(private readonly client: SupabaseClient) {}
+
+  async createHouseholdSetup(input: {
+    homeName: string;
+    timezone: string;
+    ownerName: string;
+    ownerInitials: string;
+    childName: string;
+    childInitials: string;
+    ownerColour?: string;
+    childColour?: string;
+  }): Promise<HouseholdSetupResult> {
+    const { data, error } = await this.client.rpc("create_household_setup", {
+      home_name: input.homeName,
+      home_timezone: input.timezone,
+      owner_name: input.ownerName,
+      owner_initials: input.ownerInitials,
+      child_name: input.childName,
+      child_initials: input.childInitials,
+      owner_colour: input.ownerColour ?? "#ef6d5b",
+      child_colour: input.childColour ?? "#e2aa37",
+    });
+    fail("Could not create the home", error);
+    return householdSetup(data);
+  }
 
   async createHousehold(
     homeName: string,

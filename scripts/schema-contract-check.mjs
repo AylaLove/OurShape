@@ -44,7 +44,11 @@ const secureTokenExtensionPath = await readFile(
   new URL("../supabase/migrations/202608020002_secure_token_extension_path.sql", import.meta.url),
   "utf8",
 );
-const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata, membershipAccess, secureTokenExtensionPath].join("\n");
+const atomicHouseholdSetup = await readFile(
+  new URL("../supabase/migrations/202608030001_atomic_household_setup.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata, membershipAccess, secureTokenExtensionPath, atomicHouseholdSetup].join("\n");
 
 const requiredTables = [
   "households",
@@ -86,6 +90,7 @@ const requiredFunctions = [
   "revoke_child_device",
   "create_repair_mission",
   "create_daily_quest",
+  "create_household_setup",
 ];
 
 const failures = [];
@@ -196,6 +201,21 @@ for (const signature of [
 
 if ((secureTokenExtensionPath.match(/set search_path = public, extensions/g) ?? []).length !== 4) {
   failures.push("Secure token functions cannot resolve Supabase's pgcrypto extension safely.");
+}
+
+for (const requiredStep of [
+  "create_household_with_owner",
+  "add_managed_child",
+  "create_daily_quest",
+  "create_household_invite",
+]) {
+  if (!atomicHouseholdSetup.includes(`public.${requiredStep}`)) {
+    failures.push(`Atomic household setup is missing: ${requiredStep}`);
+  }
+}
+
+if (!atomicHouseholdSetup.includes("returns table")) {
+  failures.push("Atomic household setup does not return its complete setup result.");
 }
 
 if (/\bgrant\s+(insert|update|delete|all)\b[^;]*\bhousehold_members\b/i.test(membershipAccess)) {
