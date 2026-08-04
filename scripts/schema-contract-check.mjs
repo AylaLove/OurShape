@@ -48,7 +48,11 @@ const atomicHouseholdSetup = await readFile(
   new URL("../supabase/migrations/202608030001_atomic_household_setup.sql", import.meta.url),
   "utf8",
 );
-const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata, membershipAccess, secureTokenExtensionPath, atomicHouseholdSetup].join("\n");
+const childSnapshotPrivacy = await readFile(
+  new URL("../supabase/migrations/202608030002_child_snapshot_privacy.sql", import.meta.url),
+  "utf8",
+);
+const allSql = [core, actions, snapshot, invites, childDevices, repairSchema, repairTarget, repairActions, questMetadata, membershipAccess, secureTokenExtensionPath, atomicHouseholdSetup, childSnapshotPrivacy].join("\n");
 
 const requiredTables = [
   "households",
@@ -216,6 +220,22 @@ for (const requiredStep of [
 
 if (!atomicHouseholdSetup.includes("returns table")) {
   failures.push("Atomic household setup does not return its complete setup result.");
+}
+
+for (const childPrivacyRule of [
+  "if member_role = 'child' then",
+  "'{contributionTarget}', '0'::jsonb",
+  "entry.value->>'memberId' = target_member::text",
+  "'{contributionLedger}', '[]'::jsonb",
+  "'{contributionValue}', '0'::jsonb",
+]) {
+  if (!childSnapshotPrivacy.includes(childPrivacyRule)) {
+    failures.push(`Child snapshot privacy rule is missing: ${childPrivacyRule}`);
+  }
+}
+
+if (!childSnapshotPrivacy.includes("revoke all on function public.household_snapshot_with_adult_balance(uuid, uuid) from authenticated")) {
+  failures.push("Authenticated users can bypass the child-safe household snapshot.");
 }
 
 if (/\bgrant\s+(insert|update|delete|all)\b[^;]*\bhousehold_members\b/i.test(membershipAccess)) {
